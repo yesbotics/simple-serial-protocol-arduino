@@ -22,8 +22,6 @@ void setup()
   ssp.registerCommand('c', onReceivedSomeCommandWith4WithArbitraryValues, 7);
 
 
-  ssp.sendln("Hello Bitch!");
-
 }
 
 void loop()

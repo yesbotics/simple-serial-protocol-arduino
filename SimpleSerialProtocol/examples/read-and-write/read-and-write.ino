@@ -19,7 +19,7 @@ void setup()
   ssp.registerCommand('b', onReceivedSomeCommandWithOneValue, 1);
 
   //from serial monitor send f.e 'c999,-11,-13.7899,SomeWord,Small text without komma and semicolon.,1,0;' without quotes
-  ssp.registerCommand('c', onReceivedSomeCommandWith4WithArbitraryValues, 7);
+  ssp.registerCommand('c', onReceivedSomeCommandWith4ArbitraryValues, 7);
 
 
 }
@@ -40,7 +40,7 @@ void onReceivedSomeCommandWithOneValue(const uint8_t errorNum, const uint8_t com
   ssp.sendln("Wow, you've sent the integer value \"" + String(value) + "\".");
 }
 
-void onReceivedSomeCommandWith4WithArbitraryValues(const uint8_t errorNum, const uint8_t command, const uint8_t numValues)
+void onReceivedSomeCommandWith4ArbitraryValues(const uint8_t errorNum, const uint8_t command, const uint8_t numValues)
 {
   ssp.sendln("You've sent Some incredible values:");
 

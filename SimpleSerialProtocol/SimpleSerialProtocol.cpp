@@ -242,3 +242,8 @@ void SimpleSerialProtocol::sendln(String msg)
 {
 	_serialPointer->println(msg);
 }
+
+void SimpleSerialProtocol::sendCommand(char commanChar, String values)
+{
+	send(String(commanChar)+values+";");
+}

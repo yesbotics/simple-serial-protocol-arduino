@@ -52,6 +52,7 @@ class SimpleSerialProtocol
 		bool getBoolValue();
 		float getFloatValue();
 		void send(String msg);
+		void sendCommand(char commanChar, String values);
 		void sendln(String msg);
 
 };

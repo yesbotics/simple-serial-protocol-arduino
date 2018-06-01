@@ -31,8 +31,8 @@ void SimpleSerialProtocol::initialize(ErrorFunctionPointer errorFctPtr, Hardware
 void SimpleSerialProtocol::registerCommand(const uint8_t command, FunctionPointer fctPtr, const uint8_t numArguments)
 {
 	uint8_t idx = command - FUNCTION_BUFFER_OFFSET;
-	_functionPointers[command - FUNCTION_BUFFER_OFFSET] = fctPtr;
-	_functionNumArguments[command - FUNCTION_BUFFER_OFFSET] = numArguments;
+	_functionPointers[idx] = fctPtr;
+	_functionNumArguments[idx] = numArguments;
 }
 
 void SimpleSerialProtocol::onError(const uint8_t errorNum, const uint8_t command, const uint8_t numValues)

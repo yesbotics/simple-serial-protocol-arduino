@@ -164,6 +164,23 @@ void SimpleSerialProtocol::handleCommand(const bool msgComplete)
 
 }
 
+
+void SimpleSerialProtocol::send(String msg)
+{
+	_serialPointer->print(msg);
+}
+
+void SimpleSerialProtocol::sendln(String msg)
+{
+	_serialPointer->println(msg);
+}
+
+void SimpleSerialProtocol::sendCommand(char commanChar, String values)
+{
+	send(String(commanChar)+values+";");
+}
+
+
 String SimpleSerialProtocol::getMessage()
 {
 	char txt[_count + 2];
@@ -220,6 +237,15 @@ int SimpleSerialProtocol::getIntValue()
 	return getStringValue().toInt();
 }
 
+long SimpleSerialProtocol::getLongValue()
+{
+	String stringValue = getStringValue();
+	int stringLength = stringValue.length() + 1; //one extra character for the null terminator
+	char charArrayValue[stringLength];
+	stringValue.toCharArray(charArrayValue, stringLength);
+	return atol(charArrayValue);
+}
+
 float SimpleSerialProtocol::getFloatValue()
 {
 	String strValue = getStringValue();
@@ -230,20 +256,7 @@ float SimpleSerialProtocol::getFloatValue()
 
 bool SimpleSerialProtocol::getBoolValue()
 {
-	return getIntValue()==1;
+	return getStringValue()=="true" || getIntValue()==1;
 }
 
-void SimpleSerialProtocol::send(String msg)
-{
-	_serialPointer->print(msg);
-}
 
-void SimpleSerialProtocol::sendln(String msg)
-{
-	_serialPointer->println(msg);
-}
-
-void SimpleSerialProtocol::sendCommand(char commanChar, String values)
-{
-	send(String(commanChar)+values+";");
-}

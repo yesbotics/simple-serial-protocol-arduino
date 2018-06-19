@@ -239,6 +239,7 @@ int SimpleSerialProtocol::getIntValue()
 
 long SimpleSerialProtocol::getLongValue()
 {
+	//TODO: arduinostring.c_str();
 	String stringValue = getStringValue();
 	int stringLength = stringValue.length() + 1; //one extra character for the null terminator
 	char charArrayValue[stringLength];

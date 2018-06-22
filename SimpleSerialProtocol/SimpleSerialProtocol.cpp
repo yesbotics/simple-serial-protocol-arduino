@@ -239,20 +239,12 @@ int SimpleSerialProtocol::getIntValue()
 
 long SimpleSerialProtocol::getLongValue()
 {
-	//TODO: arduinostring.c_str();
-	String stringValue = getStringValue();
-	int stringLength = stringValue.length() + 1; //one extra character for the null terminator
-	char charArrayValue[stringLength];
-	stringValue.toCharArray(charArrayValue, stringLength);
-	return atol(charArrayValue);
+	return atol(getStringValue().c_str());
 }
 
 float SimpleSerialProtocol::getFloatValue()
 {
-	String strValue = getStringValue();
-	char charArray[strValue.length() + 1];
-	strValue.toCharArray(charArray, sizeof(charArray));
-	return atof(charArray);
+	return atof(getStringValue().c_str());
 }
 
 bool SimpleSerialProtocol::getBoolValue()

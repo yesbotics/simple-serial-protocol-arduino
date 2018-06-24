@@ -9,6 +9,10 @@ const uint8_t BYTE_BREAK = '|';
 const uint8_t BYTE_DELIMITER = ',';
 const uint8_t BYTE_END = ';';
 
+const uint8_t BYTE_ESCAPED_DELIMITER = '\'';
+const uint8_t BYTE_ESCAPED_END = '#';
+
+
 class SimpleSerialProtocol
 {
 

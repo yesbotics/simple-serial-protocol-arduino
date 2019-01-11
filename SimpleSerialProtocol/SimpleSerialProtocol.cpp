@@ -168,7 +168,9 @@ void SimpleSerialProtocol::sendln(const String &msg) {
 void SimpleSerialProtocol::sendCommand(char commandChar, const String &values) {
 //	send(String(commanChar)+values+";");
 	//length: valueslength + 1(nullchar) + 1(commandchar) + 1(colon)
-	char temp[values.length() + 3] = { commandChar };
+	char temp[values.length() + 3] = { commandChar, '\0' };
+//	temp[0] = commandChar;
+//	temp[1] = '\0';
 	strcat(temp, values.c_str());
 	strcat(temp, ";");
 //	Serial.println(values);

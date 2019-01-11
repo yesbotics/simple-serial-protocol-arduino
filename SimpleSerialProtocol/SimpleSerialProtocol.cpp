@@ -6,12 +6,10 @@
  * PUBLIC
  *************************************************/
 
-SimpleSerialProtocol::SimpleSerialProtocol()
-{
+SimpleSerialProtocol::SimpleSerialProtocol() {
 }
 
-void SimpleSerialProtocol::initialize(ErrorFunctionPointer errorFctPtr, HardwareSerial *serialPtr, long baudrate, unsigned long timeout)
-{
+void SimpleSerialProtocol::initialize(ErrorFunctionPointer errorFctPtr, HardwareSerial *serialPtr, long baudrate, unsigned long timeout) {
 	_serialPointer = serialPtr;
 	_timeout = timeout;
 
@@ -19,8 +17,7 @@ void SimpleSerialProtocol::initialize(ErrorFunctionPointer errorFctPtr, Hardware
 
 	serialPtr->begin(baudrate);
 
-	for (int a = 0; a < FUNCTION_BUFFER_SIZE; a++)
-	{
+	for (int a = 0; a < FUNCTION_BUFFER_SIZE; a++) {
 		_functionPointers[a] = 0;
 		_functionNumArguments[a] = 0;
 	}
@@ -28,15 +25,13 @@ void SimpleSerialProtocol::initialize(ErrorFunctionPointer errorFctPtr, Hardware
 	flush();
 }
 
-void SimpleSerialProtocol::registerCommand(const uint8_t command, FunctionPointer fctPtr, const uint8_t numArguments)
-{
+void SimpleSerialProtocol::registerCommand(const uint8_t command, FunctionPointer fctPtr, const uint8_t numArguments) {
 	uint8_t idx = command - FUNCTION_BUFFER_OFFSET;
 	_functionPointers[idx] = fctPtr;
 	_functionNumArguments[idx] = numArguments;
 }
 
-void SimpleSerialProtocol::onError(const uint8_t errorNum, const uint8_t command, const uint8_t numValues)
-{
+void SimpleSerialProtocol::onError(const uint8_t errorNum, const uint8_t command, const uint8_t numValues) {
 	String origMsg = getMessage();
 	String msgCopy = origMsg;
 	msgCopy.replace(";", "#");
@@ -45,40 +40,32 @@ void SimpleSerialProtocol::onError(const uint8_t errorNum, const uint8_t command
 	_serialPointer->print(send);
 }
 
-void SimpleSerialProtocol::receive()
-{
+void SimpleSerialProtocol::receive() {
 
-	if (_serialPointer->available() > 0)
-	{
+	if (_serialPointer->available() > 0) {
 
 		bool msgComplete = false;
 		unsigned long startTime = millis();
 
-		while (!msgComplete)
-		{
-			if (_serialPointer->available() > 0)
-			{
+		while (!msgComplete) {
+			if (_serialPointer->available() > 0) {
 
 				uint8_t byte = _serialPointer->read();
 
 				_buffer[_count] = byte;
 				_count++;
 
-				if (byte == BYTE_END)
-				{
+				if (byte == BYTE_END) {
 					countArguments();
 					handleCommand(true);
 					msgComplete = true;
 					flush();
 				}
-			}
-			else
-			{
+			} else {
 				unsigned long currentTime = millis();
 				unsigned long timeDiff = currentTime - startTime;
 
-				if (timeDiff > _timeout)
-				{
+				if (timeDiff > _timeout) {
 					handleCommand(false);
 					msgComplete = true;
 					flush();
@@ -88,10 +75,8 @@ void SimpleSerialProtocol::receive()
 	}
 }
 
-void SimpleSerialProtocol::flush()
-{
-	for (uint8_t i = 0; i < BUFFER_SIZE; i++)
-	{
+void SimpleSerialProtocol::flush() {
+	for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
 		_buffer[i] = 0;
 	}
 	_count = 0;
@@ -99,28 +84,27 @@ void SimpleSerialProtocol::flush()
 	_position = 1;
 }
 
-void SimpleSerialProtocol::countArguments()
-{
-	for (uint8_t i = 0; i < _count; i++)
-	{
+void SimpleSerialProtocol::countArguments() {
+	for (uint8_t i = 0; i < _count; i++) {
 		uint8_t byte = _buffer[i];
 
-		if (byte == BYTE_DELIMITER)
-		{
+		if (byte == BYTE_DELIMITER) {
 			_numValues++;
 		}
 	}
-	if (_numValues == 0 && _count > 2) _numValues = 1;
-	else if (_numValues > 0) _numValues++;
+	if (_numValues == 0 && _count > 2)
+		_numValues = 1;
+	else if (_numValues > 0)
+		_numValues++;
 }
 
-void SimpleSerialProtocol::handleCommand(const bool msgComplete)
-{
-	if (!msgComplete)
-	{
+void SimpleSerialProtocol::handleCommand(const bool msgComplete) {
+	if (!msgComplete) {
 		//_serialPointer->print("incomplete Message > Timeout");
-		if (_errorFctPtr != 0) _errorFctPtr(1, '!', 0);
-		else onError(1, '!', 0);
+		if (_errorFctPtr != 0)
+			_errorFctPtr(1, '!', 0);
+		else
+			onError(1, '!', 0);
 		return;
 	}
 
@@ -130,33 +114,36 @@ void SimpleSerialProtocol::handleCommand(const bool msgComplete)
 
 	//is command valid (ASCII-range 48-122)
 	bool isValidCommand = command >= FUNCTION_BUFFER_OFFSET && command <= 122;
-	if (!isValidCommand)
-	{
+	if (!isValidCommand) {
 		//_serialPointer->print("invalidCommand");
-		if (_errorFctPtr != 0) _errorFctPtr(2, '!', 0);
-		else onError(2, '!', 0);
+		if (_errorFctPtr != 0)
+			_errorFctPtr(2, '!', 0);
+		else
+			onError(2, '!', 0);
 		return;
 	}
 
 	//is command registered
 	void (*FunctionPointer)(const uint8_t errorNum, const uint8_t command, const uint8_t numValues) = _functionPointers[idx];
 	bool isRegisteredCommand = FunctionPointer != 0;
-	if (!isRegisteredCommand)
-	{
+	if (!isRegisteredCommand) {
 		//_serialPointer->print("unregisteredCommand");
-		if (_errorFctPtr != 0) _errorFctPtr(3, '!', 0);
-		else onError(3, '!', 0);
+		if (_errorFctPtr != 0)
+			_errorFctPtr(3, '!', 0);
+		else
+			onError(3, '!', 0);
 		return;
 	}
 
 	//correct number of arguments ?
 	uint8_t numArguments = _functionNumArguments[idx];
 	bool isCorrectArgumentNum = _numValues == numArguments;
-	if (!isCorrectArgumentNum)
-	{
+	if (!isCorrectArgumentNum) {
 		//_serialPointer->print("invalidArgCount ");
-		if (_errorFctPtr != 0) _errorFctPtr(4, '!', 0);
-		else onError(4, '!', 0);
+		if (_errorFctPtr != 0)
+			_errorFctPtr(4, '!', 0);
+		else
+			onError(4, '!', 0);
 		return;
 	}
 
@@ -164,29 +151,37 @@ void SimpleSerialProtocol::handleCommand(const bool msgComplete)
 
 }
 
-
-void SimpleSerialProtocol::send(String msg)
-{
+void SimpleSerialProtocol::send(const String &msg) {
 	_serialPointer->print(msg);
+//	Serial.print(msg);
 }
 
-void SimpleSerialProtocol::sendln(String msg)
-{
+void SimpleSerialProtocol::send(const char msg[]) {
+	_serialPointer->print(msg);
+//	Serial.print(msg);
+}
+
+void SimpleSerialProtocol::sendln(const String &msg) {
 	_serialPointer->println(msg);
 }
 
-void SimpleSerialProtocol::sendCommand(char commanChar, String values)
-{
-	send(String(commanChar)+values+";");
+void SimpleSerialProtocol::sendCommand(char commandChar, const String &values) {
+//	send(String(commanChar)+values+";");
+	//length: valueslength + 1(nullchar) + 1(commandchar) + 1(colon)
+	char temp[values.length() + 3] = { commandChar };
+	strcat(temp, values.c_str());
+	strcat(temp, ";");
+//	Serial.println(values);
+//	Serial.println(values.length());
+//	Serial.println(temp);
+//	Serial.println(sizeof(temp));
+	send(temp);
 }
 
-
-String SimpleSerialProtocol::getMessage()
-{
+String SimpleSerialProtocol::getMessage() {
 	char txt[_count + 2];
 
-	for (int pos = 0; pos < _count; pos++)
-	{
+	for (int pos = 0; pos < _count; pos++) {
 		txt[pos] = _buffer[pos];
 	}
 	txt[_count] = '\0';
@@ -195,26 +190,21 @@ String SimpleSerialProtocol::getMessage()
 	return msg;
 }
 
-String SimpleSerialProtocol::getStringValue()
-{
+String SimpleSerialProtocol::getStringValue() {
 
 	int start = _position;
 
 	unsigned int len = 0;
-	for (int pos = start; pos < _count; pos++)
-	{
+	for (int pos = start; pos < _count; pos++) {
 		uint8_t byte = _buffer[pos];
 
 		char cbyte = _buffer[pos];
 
-		if (byte == BYTE_DELIMITER)
-		{
+		if (byte == BYTE_DELIMITER) {
 			len = pos - start;
 			_position = ++pos;
 			break;
-		}
-		else if (pos == _count - 1)
-		{
+		} else if (pos == _count - 1) {
 			len = pos - start;
 			_position = pos;
 		}
@@ -222,8 +212,7 @@ String SimpleSerialProtocol::getStringValue()
 
 	char txt[len + 1];
 
-	for (unsigned int i = 0; i < len; i++)
-	{
+	for (unsigned int i = 0; i < len; i++) {
 		txt[i] = _buffer[start + i];
 	}
 	txt[len] = '\0';
@@ -232,24 +221,19 @@ String SimpleSerialProtocol::getStringValue()
 	return value;
 }
 
-int SimpleSerialProtocol::getIntValue()
-{
+int SimpleSerialProtocol::getIntValue() {
 	return getStringValue().toInt();
 }
 
-long SimpleSerialProtocol::getLongValue()
-{
+long SimpleSerialProtocol::getLongValue() {
 	return atol(getStringValue().c_str());
 }
 
-float SimpleSerialProtocol::getFloatValue()
-{
+float SimpleSerialProtocol::getFloatValue() {
 	return atof(getStringValue().c_str());
 }
 
-bool SimpleSerialProtocol::getBoolValue()
-{
-	return getStringValue()=="true" || getIntValue()==1;
+bool SimpleSerialProtocol::getBoolValue() {
+	return getStringValue() == "true" || getIntValue() == 1;
 }
-
 

@@ -51,9 +51,10 @@ class SimpleSerialProtocol
 		void registerCommand(const uint8_t command, FunctionPointer fctPtr, const uint8_t numArguments);
 		void flush();
 
-		void send(String msg);
-		void sendCommand(char commanChar, String values);
-		void sendln(String msg);
+		void send(const String &msg);
+		void send(const char msg[]);
+		void sendCommand(char commanChar, const String &values);
+		void sendln(const String &msg);
 
 		String getMessage();
 		String getStringValue();

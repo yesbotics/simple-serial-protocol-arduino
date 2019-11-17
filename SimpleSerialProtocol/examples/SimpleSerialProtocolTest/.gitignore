@@ -1,0 +1,12 @@
+## sloeber sketches ##
+core
+Release
+.settings
+.project
+.cproject
+libraries
+sloeber.ino.cpp
+.idea
+cmake-build-debug
+*.elf
+*.hex

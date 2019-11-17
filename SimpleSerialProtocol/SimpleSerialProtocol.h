@@ -1,69 +1,153 @@
-#ifndef SimpleSerialProtocol_H_
-#define SimpleSerialProtocol_H_
+/*
+ *  Created on: 02.02.2019
+ *      Author: Albrecht Nitsche und Jens Kabisch
+ */
 
-#include <inttypes.h>
-#include <WString.h>
-#include <HardwareSerial.h>
+#ifndef SIMPLE_SERIAL_PROTOCOL_H
+#define SIMPLE_SERIAL_PROTOCOL_H
 
-const uint8_t BYTE_BREAK = '|';
-const uint8_t BYTE_DELIMITER = ',';
-const uint8_t BYTE_END = ';';
+#include "Core.h"
 
-const uint8_t BYTE_ESCAPED_DELIMITER = '\'';
-const uint8_t BYTE_ESCAPED_END = '#';
+const unsigned long FLUSH_TIMEOUT = 1000;
+const unsigned long COMMAND_MESSAGE_COMPLETE_TIMEOUT = 1000;
+
+const byte CHAR_EOT = 0x0A; // 10 // End of Transmission - Line Feed Zeichen \n
+
+const unsigned int EXTERNAL_COMMAND_CALLBACK_RANGE_FROM = 0;
+const unsigned int EXTERNAL_COMMAND_CALLBACK_RANGE_TO = 255;
+
+const unsigned int ERROR_IS_DEAD = 255;
+const unsigned int ERROR_EOT_WAS_NOT_READ = 254;
+const unsigned int ERROR_IS_NOT_WAITING_FOR_READ_EOT = 253;
+const unsigned int ERROR_IS_NOT_EOT = 252;
+
+const unsigned int ERROR_WAIT_FOR_BYTE_TIMEOUT = 0;
+const unsigned int ERROR_IS_NOT_INITIALIZED = 1;
+const unsigned int ERROR_EXTERNAL_COMMAND_RANGE_IS_INVALID = 2;
+const unsigned int ERROR_EXTERNAL_COMMAND_IS_NOT_IN_RESERVED_RANGE = 3;
+const unsigned int ERROR_EXTERNAL_COMMAND_IS_REGISTERED = 4;
+const unsigned int ERROR_EXTERNAL_COMMAND_IS_NOT_REGISTERED = 5;
 
 
-class SimpleSerialProtocol
-{
+class SimpleSerialProtocol : public Core {
 
-	private:
+public:
+    typedef void (*ExternalCallbackPointer)();
 
-		HardwareSerial *_serialPointer;
+    typedef void (*ExternalFatalErrorCallbackPointer)(unsigned int errorNum);
 
-		unsigned long _timeout;
-		const static uint8_t BUFFER_SIZE = 255;
 
-		// 48-122 (in ascii: 0 - z) a-z, A-Z, 0-9,
-		const static uint8_t FUNCTION_BUFFER_SIZE = 75;
-		const static uint8_t FUNCTION_BUFFER_OFFSET = 48;
+#ifdef SOFTWARESERIAL_SUPPORTED
 
-		uint8_t _byteCommand;
-		uint8_t _buffer[BUFFER_SIZE];
-		uint8_t _count;
-		uint8_t _numValues;
-		uint8_t _position;
+    SimpleSerialProtocol(
+            SoftwareSerial &softwareSerialRef,
+            unsigned long baudrate,
+            unsigned long waitForByteTimeout,
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom = EXTERNAL_COMMAND_CALLBACK_RANGE_FROM,
+            unsigned int externalCommandCallbackRangeTo = EXTERNAL_COMMAND_CALLBACK_RANGE_TO);
 
-		typedef void (*FunctionPointer)(const uint8_t errorNum, const uint8_t command, const uint8_t numValues);
-		FunctionPointer _functionPointers[FUNCTION_BUFFER_SIZE];
-		uint8_t _functionNumArguments[FUNCTION_BUFFER_SIZE];
+    SimpleSerialProtocol(
+            SoftwareSerial *softwareSerialPtr,
+            unsigned long baudrate,
+            unsigned long waitForByteTimeout,
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom = EXTERNAL_COMMAND_CALLBACK_RANGE_FROM,
+            unsigned int externalCommandCallbackRangeTo = EXTERNAL_COMMAND_CALLBACK_RANGE_TO);
 
-		typedef void (*ErrorFunctionPointer)(const uint8_t errorNum, const uint8_t command, const uint8_t numValues);
-		ErrorFunctionPointer _errorFctPtr;
+#endif
 
-		void onError(const uint8_t errorNum, const uint8_t command, const uint8_t numValues);
-		void handleCommand(const bool msgComplete);
-		void countArguments();
+    SimpleSerialProtocol(
+            HardwareSerial &hardwareSerialRef,
+            unsigned long baudrate,
+            unsigned long waitForByteTimeout,
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom = EXTERNAL_COMMAND_CALLBACK_RANGE_FROM,
+            unsigned int externalCommandCallbackRangeTo = EXTERNAL_COMMAND_CALLBACK_RANGE_TO
+    );
 
-	public:
-		SimpleSerialProtocol();
-		void initialize(ErrorFunctionPointer errorFctPtr, HardwareSerial *serialPtr, long baudrate, unsigned long timeout);
-		void receive();
-		void registerCommand(const uint8_t command, FunctionPointer fctPtr, const uint8_t numArguments);
-		void flush();
+    SimpleSerialProtocol(
+            HardwareSerial *hardwareSerialPtr,
+            unsigned long baudrate,
+            unsigned long waitForByteTimeout,
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom = EXTERNAL_COMMAND_CALLBACK_RANGE_FROM,
+            unsigned int externalCommandCallbackRangeTo = EXTERNAL_COMMAND_CALLBACK_RANGE_TO
+    );
 
-		void send(const String &msg);
-		void send(const char msg[]);
-		void sendCommand(char commanChar, const String &values);
-		void sendln(const String &msg);
+    SimpleSerialProtocol(
+            Stream &streamRef,
+            unsigned int streamType,
+            unsigned long baudrate,
+            unsigned long waitForByteTimeout,
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom = EXTERNAL_COMMAND_CALLBACK_RANGE_FROM,
+            unsigned int externalCommandCallbackRangeTo = EXTERNAL_COMMAND_CALLBACK_RANGE_TO
+    );
 
-		String getMessage();
-		String getStringValue();
-		int getIntValue();
-		long getLongValue();
-		bool getBoolValue();
-		float getFloatValue();
+    SimpleSerialProtocol(
+            Stream *streamPtr,
+            unsigned int streamType,
+            unsigned long baudrate,
+            unsigned long waitForByteTimeout,
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom = EXTERNAL_COMMAND_CALLBACK_RANGE_FROM,
+            unsigned int externalCommandCallbackRangeTo = EXTERNAL_COMMAND_CALLBACK_RANGE_TO
+    );
+
+    ~SimpleSerialProtocol();
+
+    void init();
+
+    void registerCommand(byte command, ExternalCallbackPointer externalCommandCallbackPointer);
+
+    //overrideable
+    virtual bool loop();
+
+    byte readCommand();
+
+    byte readEot();
+
+    void writeCommand(byte command);
+
+    void writeEot();
+
+protected:
+
+    unsigned int externalCommandCallbackRangeFrom;
+    unsigned int externalCommandCallbackRangeTo;
+
+    bool _isInitialized = false;
+    bool _isDead = false;
+
+    bool isExternalCommandRangeValid(); //
+    bool isExternalCommandInReservedRange(byte command); //
+    bool isExternalCommandRegistered(byte command); //
+
+    void onWaitForByteTimeout();
+
+    virtual void onGotCommandByte(byte command);
+
+    void registerExternalCommandCallback(byte command, ExternalCallbackPointer externalCommandCallbackPointer); //
+
+    unsigned int getExternalCommandIndex(byte command); //
+    void callExternalCommandCallback(byte command);
+
+    void fatalError(unsigned int errorNum, bool dieInstantly); //
+    void flushCommand();
+
+private:
+
+    ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer = 0;
+    ExternalCallbackPointer *externalCommandCallbackPointers = 0;
+
+    bool isWaitingForReadEot = false;
+
+    void afterConstructor(ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+                          unsigned int externalCommandCallbackRangeFrom, unsigned int externalCommandCallbackRangeTo);
+
+    void die();
 
 };
 
 #endif
-

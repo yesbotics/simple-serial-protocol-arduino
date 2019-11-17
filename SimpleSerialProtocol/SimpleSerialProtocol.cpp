@@ -1,241 +1,329 @@
-#include "Arduino.h"
 #include "SimpleSerialProtocol.h"
-#include <stdarg.h>
 
-/*************************************************
- * PUBLIC
- *************************************************/
+/***************************** PUBLIC *********************************/
 
-SimpleSerialProtocol::SimpleSerialProtocol() {
+#ifdef SOFTWARESERIAL_SUPPORTED
+
+SimpleSerialProtocol::SimpleSerialProtocol(
+        SoftwareSerial &softwareSerialRef,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom,
+        unsigned int externalCommandCallbackRangeTo) :
+        SimpleSerialProtocol(
+                (Stream &) softwareSerialRef,
+                STREAM_TYPE_SOFTWARESERIAL,
+                baudrate, waitForByteTimeout,
+                externalFatalErrorCallbackPointer,
+                externalCommandCallbackRangeFrom,
+                externalCommandCallbackRangeTo
+        ) {}
+
+SimpleSerialProtocol::SimpleSerialProtocol(
+        SoftwareSerial *softwareSerialPtr,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom,
+        unsigned int externalCommandCallbackRangeTo) :
+        SimpleSerialProtocol(
+                (Stream *) softwareSerialPtr,
+                STREAM_TYPE_SOFTWARESERIAL,
+                baudrate,
+                waitForByteTimeout,
+                externalFatalErrorCallbackPointer,
+                externalCommandCallbackRangeFrom,
+                externalCommandCallbackRangeTo
+        ) {}
+
+#endif
+
+SimpleSerialProtocol::SimpleSerialProtocol(
+        HardwareSerial &hardwareSerialRef,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom,
+        unsigned int externalCommandCallbackRangeTo) :
+        SimpleSerialProtocol(
+                (Stream &) hardwareSerialRef,
+                STREAM_TYPE_HARDWARESERIAL,
+                baudrate,
+                waitForByteTimeout,
+                externalFatalErrorCallbackPointer,
+                externalCommandCallbackRangeFrom,
+                externalCommandCallbackRangeTo
+        ) {}
+
+SimpleSerialProtocol::SimpleSerialProtocol(
+        HardwareSerial *hardwareSerialPtr,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom,
+        unsigned int externalCommandCallbackRangeTo) :
+        SimpleSerialProtocol(
+                (Stream *) hardwareSerialPtr,
+                STREAM_TYPE_HARDWARESERIAL,
+                baudrate,
+                waitForByteTimeout,
+                externalFatalErrorCallbackPointer,
+                externalCommandCallbackRangeFrom,
+                externalCommandCallbackRangeTo
+        ) {}
+
+
+SimpleSerialProtocol::SimpleSerialProtocol(
+        Stream &streamRef,
+        unsigned int streamType,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom ,
+        unsigned int externalCommandCallbackRangeTo) :
+        Core(
+                streamRef,
+                streamType,
+                baudrate,
+                waitForByteTimeout
+        ) {
+
+    this->afterConstructor(
+            externalFatalErrorCallbackPointer,
+            externalCommandCallbackRangeFrom,
+            externalCommandCallbackRangeTo
+    );
 }
 
-void SimpleSerialProtocol::initialize(ErrorFunctionPointer errorFctPtr, HardwareSerial *serialPtr, long baudrate, unsigned long timeout) {
-	_serialPointer = serialPtr;
-	_timeout = timeout;
 
-	_errorFctPtr = errorFctPtr;
-
-	serialPtr->begin(baudrate);
-
-	for (int a = 0; a < FUNCTION_BUFFER_SIZE; a++) {
-		_functionPointers[a] = 0;
-		_functionNumArguments[a] = 0;
-	}
-
-	flush();
+SimpleSerialProtocol::SimpleSerialProtocol(
+        Stream *streamPtr,
+        unsigned int streamType,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom,
+        unsigned int externalCommandCallbackRangeTo) :
+        Core(
+                streamPtr,
+                streamType,
+                baudrate,
+                waitForByteTimeout
+        ) {
+    this->afterConstructor(
+            externalFatalErrorCallbackPointer,
+            externalCommandCallbackRangeFrom,
+            externalCommandCallbackRangeTo
+    );
 }
 
-void SimpleSerialProtocol::registerCommand(const uint8_t command, FunctionPointer fctPtr, const uint8_t numArguments) {
-	uint8_t idx = command - FUNCTION_BUFFER_OFFSET;
-	_functionPointers[idx] = fctPtr;
-	_functionNumArguments[idx] = numArguments;
-}
-
-void SimpleSerialProtocol::onError(const uint8_t errorNum, const uint8_t command, const uint8_t numValues) {
-	String origMsg = getMessage();
-	String msgCopy = origMsg;
-	msgCopy.replace(";", "#");
-	msgCopy.replace(",", "'");
-	String send = "!" + String(errorNum) + "," + msgCopy + ";";
-	_serialPointer->print(send);
-}
-
-void SimpleSerialProtocol::receive() {
-
-	if (_serialPointer->available() > 0) {
-
-		bool msgComplete = false;
-		unsigned long startTime = millis();
-
-		while (!msgComplete) {
-			if (_serialPointer->available() > 0) {
-
-				uint8_t byte = _serialPointer->read();
-
-				_buffer[_count] = byte;
-				_count++;
-
-				if (byte == BYTE_END) {
-					countArguments();
-					handleCommand(true);
-					msgComplete = true;
-					flush();
-				}
-			} else {
-				unsigned long currentTime = millis();
-				unsigned long timeDiff = currentTime - startTime;
-
-				if (timeDiff > _timeout) {
-					handleCommand(false);
-					msgComplete = true;
-					flush();
-				}
-			}
-		}
-	}
-}
-
-void SimpleSerialProtocol::flush() {
-	for (uint8_t i = 0; i < BUFFER_SIZE; i++) {
-		_buffer[i] = 0;
-	}
-	_count = 0;
-	_numValues = 0;
-	_position = 1;
-}
-
-void SimpleSerialProtocol::countArguments() {
-	for (uint8_t i = 0; i < _count; i++) {
-		uint8_t byte = _buffer[i];
-
-		if (byte == BYTE_DELIMITER) {
-			_numValues++;
-		}
-	}
-	if (_numValues == 0 && _count > 2)
-		_numValues = 1;
-	else if (_numValues > 0)
-		_numValues++;
-}
-
-void SimpleSerialProtocol::handleCommand(const bool msgComplete) {
-	if (!msgComplete) {
-		//_serialPointer->print("incomplete Message > Timeout");
-		if (_errorFctPtr != 0)
-			_errorFctPtr(1, '!', 0);
-		else
-			onError(1, '!', 0);
-		return;
-	}
-
-	//get CommandChar from buffer
-	uint8_t command = _buffer[0];
-	uint8_t idx = command - FUNCTION_BUFFER_OFFSET;
-
-	//is command valid (ASCII-range 48-122)
-	bool isValidCommand = command >= FUNCTION_BUFFER_OFFSET && command <= 122;
-	if (!isValidCommand) {
-		//_serialPointer->print("invalidCommand");
-		if (_errorFctPtr != 0)
-			_errorFctPtr(2, '!', 0);
-		else
-			onError(2, '!', 0);
-		return;
-	}
-
-	//is command registered
-	void (*FunctionPointer)(const uint8_t errorNum, const uint8_t command, const uint8_t numValues) = _functionPointers[idx];
-	bool isRegisteredCommand = FunctionPointer != 0;
-	if (!isRegisteredCommand) {
-		//_serialPointer->print("unregisteredCommand");
-		if (_errorFctPtr != 0)
-			_errorFctPtr(3, '!', 0);
-		else
-			onError(3, '!', 0);
-		return;
-	}
-
-	//correct number of arguments ?
-	uint8_t numArguments = _functionNumArguments[idx];
-	bool isCorrectArgumentNum = _numValues == numArguments;
-	if (!isCorrectArgumentNum) {
-		//_serialPointer->print("invalidArgCount ");
-		if (_errorFctPtr != 0)
-			_errorFctPtr(4, '!', 0);
-		else
-			onError(4, '!', 0);
-		return;
-	}
-
-	FunctionPointer(0, command, _numValues);
+SimpleSerialProtocol::~SimpleSerialProtocol() {
 
 }
 
-void SimpleSerialProtocol::send(const String &msg) {
-	_serialPointer->print(msg);
-//	Serial.print(msg);
+void SimpleSerialProtocol::afterConstructor(
+        ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+        unsigned int externalCommandCallbackRangeFrom,
+        unsigned int externalCommandCallbackRangeTo
+) {
+    this->externalFatalErrorCallbackPointer = externalFatalErrorCallbackPointer;
+
+    this->externalCommandCallbackRangeFrom = externalCommandCallbackRangeFrom;
+    this->externalCommandCallbackRangeTo = externalCommandCallbackRangeTo;
+
+    unsigned int externalCommandCallbackPointerBufferSize =
+            abs(externalCommandCallbackRangeTo - externalCommandCallbackRangeFrom) + 1;
+
+    this->externalCommandCallbackPointers = new ExternalCallbackPointer[externalCommandCallbackPointerBufferSize];
+    for (unsigned int i = 0; i < externalCommandCallbackPointerBufferSize;i++) {
+        this->externalCommandCallbackPointers[i] = 0;
+    }
 }
 
-void SimpleSerialProtocol::send(const char msg[]) {
-	_serialPointer->print(msg);
-//	Serial.print(msg);
+void SimpleSerialProtocol::init() {
+    Core::init();
+//	Serial.println(F("SimpleSerialProtocol::init"));
+    if (!this->isExternalCommandRangeValid()) {
+        this->fatalError(ERROR_EXTERNAL_COMMAND_RANGE_IS_INVALID, true);
+        return;
+    }
+    this->_isInitialized = true;
 }
 
-void SimpleSerialProtocol::sendln(const String &msg) {
-	_serialPointer->println(msg);
+bool SimpleSerialProtocol::loop() {
+//	Serial.print(F("SimpleSerialProtocol::loop"));
+
+    if (this->_isDead) {
+        return false;
+    }
+
+    if (this->isWaitingForReadEot) {
+        this->fatalError(ERROR_EOT_WAS_NOT_READ, true);
+        return false;
+    }
+
+    if (this->streamPointer->available() > 0) {
+        byte command = this->readCommand();
+        this->onGotCommandByte(command);
+    }
+
+    return true;
 }
 
-void SimpleSerialProtocol::sendCommand(char commandChar, const String &values) {
-//	send(String(commanChar)+values+";");
-	//length: valueslength + 1(nullchar) + 1(commandchar) + 1(colon)
-	char temp[values.length() + 3] = { commandChar, '\0' };
-//	temp[0] = commandChar;
-//	temp[1] = '\0';
-	strcat(temp, values.c_str());
-	strcat(temp, ";");
-//	Serial.println(values);
-//	Serial.println(values.length());
-//	Serial.println(temp);
-//	Serial.println(sizeof(temp));
-	send(temp);
+byte SimpleSerialProtocol::readCommand() {
+    byte bite = this->readByte();
+    this->isWaitingForReadEot = true;
+    return bite;
 }
 
-String SimpleSerialProtocol::getMessage() {
-	char txt[_count + 2];
+byte SimpleSerialProtocol::readEot() {
+//TODO: check, ob eot ausgelesen werden darf, nur wenn this->isWaitingForReadEot true ist
 
-	for (int pos = 0; pos < _count; pos++) {
-		txt[pos] = _buffer[pos];
-	}
-	txt[_count] = '\0';
+    if (!this->isWaitingForReadEot) {
+        this->fatalError(ERROR_IS_NOT_WAITING_FOR_READ_EOT, true);
+        return CHAR_EOT;
+    }
 
-	String msg = String(txt);
-	return msg;
+    this->isWaitingForReadEot = false;
+    byte bite = this->readByte();
+    if (bite != CHAR_EOT) {
+        this->fatalError(ERROR_IS_NOT_EOT, true);
+    }
+    return bite;
 }
 
-String SimpleSerialProtocol::getStringValue() {
-
-	int start = _position;
-
-	unsigned int len = 0;
-	for (int pos = start; pos < _count; pos++) {
-		uint8_t byte = _buffer[pos];
-
-		char cbyte = _buffer[pos];
-
-		if (byte == BYTE_DELIMITER) {
-			len = pos - start;
-			_position = ++pos;
-			break;
-		} else if (pos == _count - 1) {
-			len = pos - start;
-			_position = pos;
-		}
-	}
-
-	char txt[len + 1];
-
-	for (unsigned int i = 0; i < len; i++) {
-		txt[i] = _buffer[start + i];
-	}
-	txt[len] = '\0';
-
-	String value = String(txt);
-	return value;
+void SimpleSerialProtocol::writeCommand(const byte command) {
+    this->writeByte(command);
 }
 
-int SimpleSerialProtocol::getIntValue() {
-	return getStringValue().toInt();
+void SimpleSerialProtocol::writeEot() {
+    this->writeByte(CHAR_EOT);
 }
 
-long SimpleSerialProtocol::getLongValue() {
-	return atol(getStringValue().c_str());
+void SimpleSerialProtocol::registerCommand(const byte command, ExternalCallbackPointer externalCallbackPointer) {
+//	Serial.println(F("SimpleSerialProtocol::registerCommand"));
+
+    if (!this->_isInitialized) {
+        this->fatalError(ERROR_IS_NOT_INITIALIZED, true);
+        return;
+    }
+
+    if (!this->isExternalCommandInReservedRange(command)) {
+        this->fatalError(ERROR_EXTERNAL_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
+        return;
+    }
+
+    if (this->isExternalCommandRegistered(command)) {
+        this->fatalError(ERROR_EXTERNAL_COMMAND_IS_REGISTERED, true);
+        return;
+    }
+
+    this->registerExternalCommandCallback(command, externalCallbackPointer);
 }
 
-float SimpleSerialProtocol::getFloatValue() {
-	return atof(getStringValue().c_str());
+/***************************** PROTECTED *********************************/
+
+void SimpleSerialProtocol::onWaitForByteTimeout() {
+    this->fatalError(ERROR_WAIT_FOR_BYTE_TIMEOUT, true);
 }
 
-bool SimpleSerialProtocol::getBoolValue() {
-	return getStringValue() == "true" || getIntValue() == 1;
+void SimpleSerialProtocol::onGotCommandByte(byte command) {
+//	Serial.println(F("SimpleSer/ialProtocol::onGotCommandByte "));
+//	Serial.println(command);
+
+    if (!this->_isInitialized) {
+        this->fatalError(ERROR_IS_NOT_INITIALIZED, true);
+        return;
+    }
+
+    if (!this->isExternalCommandInReservedRange(command)) {
+        this->fatalError(ERROR_EXTERNAL_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
+        this->flushCommand();
+        return;
+    }
+
+    if (!this->isExternalCommandRegistered(command)) {
+        this->fatalError(ERROR_EXTERNAL_COMMAND_IS_NOT_REGISTERED, true);
+        this->flushCommand();
+        return;
+    }
+
+    this->callExternalCommandCallback(command);
+
 }
 
+void SimpleSerialProtocol::registerExternalCommandCallback(const byte command,
+                                                           ExternalCallbackPointer externalCallbackPointer) {
+    unsigned int externalCommandIndex = this->getExternalCommandIndex(command);
+    this->externalCommandCallbackPointers[externalCommandIndex] = externalCallbackPointer;
+}
+
+bool SimpleSerialProtocol::isExternalCommandRangeValid() {
+    bool toIsLowerThanFrom = this->externalCommandCallbackRangeFrom > this->externalCommandCallbackRangeTo;
+    bool fromOrToIsLowerThanMinimum = this->externalCommandCallbackRangeFrom < EXTERNAL_COMMAND_CALLBACK_RANGE_FROM ||
+                                      this->externalCommandCallbackRangeTo < EXTERNAL_COMMAND_CALLBACK_RANGE_FROM;
+    bool fromOrToIsGreaterThanMaximum = this->externalCommandCallbackRangeFrom > EXTERNAL_COMMAND_CALLBACK_RANGE_TO ||
+                                        this->externalCommandCallbackRangeTo > EXTERNAL_COMMAND_CALLBACK_RANGE_TO;
+    return !toIsLowerThanFrom && !fromOrToIsLowerThanMinimum && !fromOrToIsGreaterThanMaximum;
+}
+
+bool SimpleSerialProtocol::isExternalCommandInReservedRange(byte command) {
+    return command >= this->externalCommandCallbackRangeFrom && command <= this->externalCommandCallbackRangeTo;
+}
+
+bool SimpleSerialProtocol::isExternalCommandRegistered(byte command) {
+    unsigned int externalCommandIndex = this->getExternalCommandIndex(command);
+    return this->externalCommandCallbackPointers[externalCommandIndex] != 0;
+}
+
+unsigned int SimpleSerialProtocol::getExternalCommandIndex(byte command) {
+    return (unsigned int) command - this->externalCommandCallbackRangeFrom;
+}
+
+void SimpleSerialProtocol::callExternalCommandCallback(byte command) {
+    unsigned int externalCommandIndex = this->getExternalCommandIndex(command);
+    ExternalCallbackPointer externalCommandCallbackPointer = this->externalCommandCallbackPointers[externalCommandIndex];
+    externalCommandCallbackPointer();
+}
+
+void SimpleSerialProtocol::fatalError(unsigned int errorNum, bool dieInstantly) {
+    this->externalFatalErrorCallbackPointer(errorNum);
+    if (dieInstantly) {
+        this->die();
+        return;
+    }
+}
+
+/***************************** PRIVATE *********************************/
+void SimpleSerialProtocol::flushCommand() {
+//	Serial.println(F("SimpleSerialProtocol::flushCommand"));
+
+    bool completlyFlushed = false;
+
+    unsigned long lastMillis = millis();
+
+    while (!completlyFlushed) {
+
+        if (this->streamPointer->available() > 0) {
+            byte bite = this->readByte();
+            if (bite == CHAR_EOT) {
+                completlyFlushed = true;
+                this->isWaitingForReadEot = false;
+            }
+        }
+
+        if (millis() - lastMillis > FLUSH_TIMEOUT) {
+            this->die();
+            return;
+        }
+
+    }
+
+}
+
+void SimpleSerialProtocol::die() {
+//	Serial.println(F("SimpleSerialProtocol::die"));
+    this->_isDead = true;
+    this->externalFatalErrorCallbackPointer(ERROR_IS_DEAD);
+}

@@ -142,6 +142,7 @@ void Core::writeCharArray(const char *charArray) {
 		i++;
 		c = charArray[i];
 	}
+	this->streamPointer->write(CHAR_NULL);
 }
 
 /***************************** PRIVATE *********************************/

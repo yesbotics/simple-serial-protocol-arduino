@@ -1,6 +1,6 @@
 #include <SimpleSerialProtocol.h>
 
-// declare callbacks
+// declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
 void onError(unsigned int errorNum);
 
 void onReceivedSomething();
@@ -15,7 +15,7 @@ const char COMMAND_ID_SEND = 's';
 SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 void setup() {
-    // init ssp. ssp calls Serial.begin(9600) behind the scenes
+    // init ssp. ssp is calling Serial.begin(9600); behind the scenes
     ssp.init();
     // if message command with 'r' is received, callback will be called
     ssp.registerCommand(COMMAND_ID_RECEIVE, onReceivedSomething);
@@ -26,8 +26,10 @@ void loop() {
     ssp.loop();
 }
 
+// declare callbacks
 void onReceivedSomething() {
-    //buffer and read sent string
+
+    // read and create buffer for received string
     const int maxStringLength = 50;
     char someString[maxStringLength];
     ssp.readCharArray(someString, maxStringLength);

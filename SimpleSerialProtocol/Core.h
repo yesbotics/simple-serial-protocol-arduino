@@ -37,7 +37,6 @@ public:
 	char readChar();
 	unsigned char readUnsignedChar();
 	bool readBool();
-	bool readBool();
 	int readInt();
 	unsigned int readUnsignedInt();
 	short readShort();

@@ -34,7 +34,10 @@ class Core {
 public:
 	void init();
 	byte readByte();
-	char readChar();bool readBool();
+	char readChar();
+	unsigned char readUnsignedChar();
+	bool readBool();
+	bool readBool();
 	int readInt();
 	unsigned int readUnsignedInt();
 	short readShort();
@@ -45,6 +48,7 @@ public:
 	void readCharArray(char *output, uint8_t maxLength);
 	void writeByte(const byte bite);
 	void writeChar(const char ch);
+	void writeUnsignedChar(const unsigned char ch);
 	void writeBool(const bool b);
 	void writeInt(const int i);
 	void writeUnsignedInt(const unsigned int ui);

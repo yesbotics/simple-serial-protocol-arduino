@@ -42,16 +42,20 @@ char Core::readChar() {
 	return (char) this->readInt8();
 }
 
+unsigned char Core::readUnsignedChar() {
+	return (unsigned char) this->readInt8();
+}
+
 bool Core::readBool() {
 	return (bool) (this->readInt8() != 0);
 }
 
 int Core::readInt() {
-	return (int) this->readInt8();
+	return (int) this->readInt16();
 }
 
 unsigned int Core::readUnsignedInt() {
-	return (unsigned int) this->readInt8();
+	return (unsigned int) this->readInt16();
 }
 
 short Core::readShort() {
@@ -99,16 +103,20 @@ void Core::writeChar(const char ch) {
 	this->writeInt8(ch);
 }
 
+void Core::writeUnsignedChar(const unsigned char ch) {
+	this->writeInt8(ch);
+}
+
 void Core::writeBool(const bool b) {
 	this->writeInt8(b);
 }
 
 void Core::writeInt(const int i) {
-	this->writeInt8(i);
+	this->writeInt16(i);
 }
 
 void Core::writeUnsignedInt(const unsigned int ui) {
-	this->writeInt8(ui);
+	this->writeInt16(ui);
 }
 
 void Core::writeShort(const short sh) {

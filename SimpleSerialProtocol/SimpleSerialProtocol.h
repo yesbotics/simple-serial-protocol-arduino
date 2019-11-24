@@ -143,8 +143,11 @@ private:
 
     bool isWaitingForReadEot = false;
 
-    void afterConstructor(ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
-                          unsigned int externalCommandCallbackRangeFrom, unsigned int externalCommandCallbackRangeTo);
+    void afterConstructor(
+            ExternalFatalErrorCallbackPointer externalFatalErrorCallbackPointer,
+            unsigned int externalCommandCallbackRangeFrom,
+            unsigned int externalCommandCallbackRangeTo
+    );
 
     void die();
 

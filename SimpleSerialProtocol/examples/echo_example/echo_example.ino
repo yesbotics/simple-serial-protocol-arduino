@@ -2,12 +2,12 @@
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
 void onError(unsigned int errorNum);
-
 void onReceivedSomething();
 
-// declare communication constants
+// inintialize communication constants
 const long BAUDRATE = 9600;
 const long CHARACTER_TIMEOUT = 500;
+
 const char COMMAND_ID_RECEIVE = 'r';
 const char COMMAND_ID_SEND = 's';
 

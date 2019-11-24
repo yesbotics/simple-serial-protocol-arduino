@@ -4,9 +4,11 @@
 void onError(unsigned int errorNum);
 void onReceivedSomething();
 
-// inintialize communication constants
-const long BAUDRATE = 9600;
-const long CHARACTER_TIMEOUT = 500;
+// inintialize hardware constants
+const long BAUDRATE = 9600; // speed of serial connection
+const long CHARACTER_TIMEOUT = 500; // wait max 500 ms between single chars to be received
+
+// inintialize hardware constants
 
 const char COMMAND_ID_RECEIVE = 'r';
 const char COMMAND_ID_SEND = 's';
@@ -48,5 +50,6 @@ void onReceivedSomething() {
 }
 
 void onError(unsigned int errorNum) {
-    //do nothing
+    // error numbers are explained within Simple Serial Protocol's documentation at:
+    // https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 }

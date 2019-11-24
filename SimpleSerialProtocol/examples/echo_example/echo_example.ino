@@ -35,6 +35,9 @@ void onReceivedSomething() {
     // read received float
     float someFloatingPointValue = ssp.readFloat();
 
+    // read and expect the end-of-transmission byte. important, dont forget
+    ssp.readEot();
+
     //send answer
     ssp.writeCommand(COMMAND_ID_SEND);
     ssp.writeFloat(someFloatingPointValue);

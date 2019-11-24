@@ -29,7 +29,7 @@ void loop() {
 void onReceivedSomething() {
     //buffer and read sent string
     const int maxStringLength = 50;
-    const char someString[maxStringLength];
+    char someString[maxStringLength];
     ssp.readCharArray(someString, maxStringLength);
 
     // read received float

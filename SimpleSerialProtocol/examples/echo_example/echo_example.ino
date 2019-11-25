@@ -43,8 +43,8 @@ void onReceivedSomething() {
 
     //send answer
     ssp.writeCommand(COMMAND_ID_SEND);
-    ssp.writeFloat(someFloatingPointValue);
     ssp.writeCharArray(someString);
+    ssp.writeFloat(someFloatingPointValue);
     ssp.writeEot(); //end of transmission
 }
 

@@ -8,8 +8,7 @@ void onReceivedSomething();
 const long BAUDRATE = 9600; // speed of serial connection
 const long CHARACTER_TIMEOUT = 500; // wait max 500 ms between single chars to be received
 
-// inintialize hardware constants
-
+// inintialize command constants
 const char COMMAND_ID_RECEIVE = 'r';
 const char COMMAND_ID_SEND = 's';
 

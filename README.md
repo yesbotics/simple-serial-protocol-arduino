@@ -1,5 +1,4 @@
 # Simple Serial Protocol for Arduino
-
 Easy and robust general purpose serial communication for PC side applications and Arduino(-compatible) devices.
 Arduino implementation of our [Simple Serial Protocol]
 

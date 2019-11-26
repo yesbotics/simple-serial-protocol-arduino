@@ -12,8 +12,14 @@ const long CHARACTER_TIMEOUT = 500; // wait max 500 ms between single chars to b
 const char COMMAND_ID_RECEIVE = 'r';
 const char COMMAND_ID_SEND = 's';
 
-// create instance. define command id range in which ssp is listening
+// create instance. pass Serial instance define command id range within ssp is listening
 SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
+
+// alternatively u can create an instance of SoftwareSerial
+// https://www.arduino.cc/en/Reference/SoftwareSerial
+// #include <SoftwareSerial.h>
+// SoftwareSerial swSerial(2, 3); // RX, TX
+// SimpleSerialProtocol ssp(swSerial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 void setup() {
     // init ssp. ssp is calling Serial.begin(9600); behind the scenes

@@ -4,11 +4,12 @@ Easy and robust general purpose serial communication for PC side applications an
 Arduino implementation of our [Simple Serial Protocol]
 
 ### install
-just copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
-or arduino library manager (!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!muss noch in die arduino registry)
+copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
+or if u are using the Arduino app `Tools->Library Manager` and search for `SimpleSerialProtocol`  
+!!!!!!!! muss noch in die arduino registry
 
 ## usage example
-This example receives two values from PC-side and sends them back. 
+This example receives two values from PC-side or other arduinos-microntrollers and sends them back. 
 The first value is an text of max 50 chars length (in this example. more is possible).
 The second value is an floating point value. We have choosen 3.14159265359.
 This example can be found as npm application in the `simple-serial-protocol-arduino/examples/echo_example` sketch folder.
@@ -78,7 +79,18 @@ void onError(unsigned int errorNum) {
 }
 ```
 
+## HardwareSerial and SoftwareSerial support
+Just use [Serial (HardwareSerial)] (recommended) or [SoftwareSerial Library].
+Both libs are based on [Arduino's Stream implementation].
+
+## arduino-cli support (hint)
+We primarily compile and upload our Arduino sketches with [arduino-cli].
+That project is great stuff. fresh stuff.
+
 ## links
 [Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 [Simple Serial Protocol for Node.js]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-node
+[Serial (HardwareSerial)]:https://www.arduino.cc/reference/en/language/functions/communication/serial/
+[SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
+[Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
 [arduino-cli]:https://github.com/arduino/arduino-cli

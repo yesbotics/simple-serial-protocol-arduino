@@ -13,7 +13,7 @@ navigate through menu`Tools->Library Manager` and search for `SimpleSerialProtoc
 This example receives two values from PC-side or other arduinos-microntrollers and sends them back. 
 The first value is an text of max 50 chars length (in this example. more is possible).
 The second value is an floating point value. We have choosen 3.14159265359.
-This example can be found as npm application in the `simple-serial-protocol-arduino/examples/echo_example` sketch folder.
+This example can be found as Arduino sketch within the `simple-serial-protocol-arduino/examples/echo_example` folder.
 This example corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
 
 ```c++

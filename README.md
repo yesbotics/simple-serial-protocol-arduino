@@ -2,11 +2,13 @@
 Easy and robust general purpose serial communication for PC side applications and Arduino(-compatible) devices.
 Arduino implementation of our [Simple Serial Protocol]
 
-## install
+## install the Arduino lib first
+there are two ways:
+### manual method
 copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
-or if u are using the Arduino app `Tools->Library Manager` and search for `SimpleSerialProtocol`  
+### Arduino app built-in Library Manager
+navigate through menu`Tools->Library Manager` and search for `SimpleSerialProtocol` and install.
 !!!!!!!! muss noch in die arduino registry
-
 ## usage example
 This example receives two values from PC-side or other arduinos-microntrollers and sends them back. 
 The first value is an text of max 50 chars length (in this example. more is possible).

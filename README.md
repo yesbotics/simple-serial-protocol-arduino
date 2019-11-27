@@ -4,11 +4,13 @@ Arduino implementation of our [Simple Serial Protocol]
 
 ## install the Arduino lib first
 there are two ways:
+
 ### manual method
 copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
+
 ### Arduino app built-in Library Manager
 navigate through menu`Tools->Library Manager` and search for `SimpleSerialProtocol` and install.
-!!!!!!!! muss noch in die arduino registry
+
 ## usage example
 This example receives two values from PC-side or other arduinos-microntrollers and sends them back. 
 The first value is an text of max 50 chars length (in this example. more is possible).
@@ -53,7 +55,7 @@ void loop() {
     ssp.loop();
 }
 
-// declare callbacks
+// callbacks (deaclared at top)
 void onReceivedSomething() {
 
     // read and create buffer for received string

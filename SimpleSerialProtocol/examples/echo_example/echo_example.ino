@@ -33,7 +33,7 @@ void loop() {
     ssp.loop();
 }
 
-// declare callbacks
+// callbacks (deaclared at top)
 void onReceivedSomething() {
 
     // read and create buffer for received string

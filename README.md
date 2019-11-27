@@ -2,7 +2,7 @@
 Easy and robust general purpose serial communication for PC side applications and Arduino(-compatible) devices.
 Arduino implementation of our [Simple Serial Protocol]
 
-### install
+## install
 copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
 or if u are using the Arduino app `Tools->Library Manager` and search for `SimpleSerialProtocol`  
 !!!!!!!! muss noch in die arduino registry
@@ -14,7 +14,7 @@ The second value is an floating point value. We have choosen 3.14159265359.
 This example can be found as npm application in the `simple-serial-protocol-arduino/examples/echo_example` sketch folder.
 This example corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
 
-```arduino
+```c++
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
@@ -82,14 +82,14 @@ void onError(unsigned int errorNum) {
 Just use [Serial (HardwareSerial)] (recommended) or [SoftwareSerial Library].
 Both libs are based on [Arduino's Stream implementation].
 
-## arduino-cli support (hint)
-We primarily compile and upload our Arduino sketches with [arduino-cli].
+## Arduino-CLI (arduino-cli) support 
+We primarily compile and upload our Arduino sketches with [Arduino-CLI (arduino-cli)].
 That project is great stuff. fresh stuff.
 
-## links
+## Links
 [Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 [Simple Serial Protocol for Node.js]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-node
 [Serial (HardwareSerial)]:https://www.arduino.cc/reference/en/language/functions/communication/serial/
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
-[arduino-cli]:https://github.com/arduino/arduino-cli
+[Arduino-CLI (arduino-cli)]:https://github.com/arduino/arduino-cli

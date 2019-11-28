@@ -89,7 +89,7 @@ Amount of 49 characters should not be exceeded because
 This example can be found as Arduino sketch within the `simple-serial-protocol-arduino/examples/echo_example` folder.
 It corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
 
-### Limitations
+## Limitations
 Arduino device's memory is low.
 Receiving long strings needs memory (1 byte per char) because of buffering every single character. 
 Keep this in mind.

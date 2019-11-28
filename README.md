@@ -89,13 +89,6 @@ Amount of 49 characters should not be exceeded because
 This example can be found as Arduino sketch within the `simple-serial-protocol-arduino/examples/echo_example` folder.
 It corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
 
-## Limitations
-Arduino device's memory is low.
-Receiving long strings needs memory (1 byte per char) because of buffering every single character. 
-Keep this in mind.
-Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
-which is restricted to 2,048kB of internal memory. 
-
 ## HardwareSerial and SoftwareSerial support
 Just use [Serial (HardwareSerial)] (recommended) or [SoftwareSerial Library].
 Both libs are based on [Arduino's Stream implementation].
@@ -103,6 +96,13 @@ Both libs are based on [Arduino's Stream implementation].
 ## Arduino-CLI (arduino-cli) support 
 We primarily compile and upload our Arduino sketches with [Arduino-CLI (arduino-cli)].
 That project is great stuff. Fresh stuff.
+
+## Limitations
+Arduino device's memory is low.
+Receiving long strings needs memory (1 byte per char) because of buffering every single character. 
+Keep this in mind.
+Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
+which is restricted to 2,048kB of internal memory. 
 
 ## Plans for the next release(s): 
 * Hardening: 

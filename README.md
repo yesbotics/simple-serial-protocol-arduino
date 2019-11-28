@@ -2,21 +2,21 @@
 Easy and robust general purpose serial communication for PC side applications and Arduino(-compatible) devices.
 Arduino implementation of our [Simple Serial Protocol]
 
-## install the Arduino lib first
-there are two ways:
+## Install this Arduino library
+### Manual method
+Copy `SimpleSerialProtocol` folder from this repo into your arduino libraries location. 
+Your Arduino libraries folder depends on your operating system (and maybe custom path settings). Default path is:
+#### Windows 7/8/10:
+`C:\Users\<username>\Documents\Arduino\libraries\`
+#### Linux
+`/home/<username>/Arduino/libraries/`
+#### macOs
+`/Users/<username>/Documents/Arduino/libraries/`
 
-### manual method
-copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
-
-### Arduino app built-in Library Manager
-navigate through menu`Tools->Library Manager` and search for `SimpleSerialProtocol` and install.
-
-## usage example
-This example receives two values from PC-side or other arduinos-microntrollers and sends them back. 
-The first value is an text of max 50 chars length (in this example. more is possible).
-The second value is an floating point value. We have choosen 3.14159265359.
-This example can be found as Arduino sketch within the `simple-serial-protocol-arduino/examples/echo_example` folder.
-This example corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
+## Usage example (echo_example sketch)
+This example receives two values from PC-side and sends them back immediately. 
+The first value is a text. 
+The second value is a floating point value.
 
 ```c++
 #include <SimpleSerialProtocol.h>
@@ -81,6 +81,20 @@ void onError(unsigned int errorNum) {
     // https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 }
 ```
+In this example, the text buffer is limited to 50 chars: `const int maxStringLength = 50;`.
+Means **49** chars maximum text length. 
+Amount of 49 characters should not be exceeded because 
+1 byte is reserved for end-of-string byte.
+
+This example can be found as Arduino sketch within the `simple-serial-protocol-arduino/examples/echo_example` folder.
+It corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
+
+### Limitations
+Arduino device's memory is low.
+Receiving long strings needs memory (1 byte per char) because of buffering every single character. 
+Keep this in mind.
+Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
+which is restricted to 2,048kB of internal memory. 
 
 ## HardwareSerial and SoftwareSerial support
 Just use [Serial (HardwareSerial)] (recommended) or [SoftwareSerial Library].
@@ -88,7 +102,15 @@ Both libs are based on [Arduino's Stream implementation].
 
 ## Arduino-CLI (arduino-cli) support 
 We primarily compile and upload our Arduino sketches with [Arduino-CLI (arduino-cli)].
-That project is great stuff. fresh stuff.
+That project is great stuff. Fresh stuff.
+
+## Plans for the next release(s): 
+* Hardening: 
+    * Text Comunication with fixed buffer size and resulting error, if buffer exceeded.
+    Count length while receiving and reading chars from incoming stream.
+* Features:
+    * Easy install option: Provide this library in the Arduino app's built-in Library Manager, too.
+    * Arduino [String Class] compatibilty (char array / c-string only at the moment)
 
 ## Links
 [Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
@@ -97,3 +119,5 @@ That project is great stuff. fresh stuff.
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
 [Arduino-CLI (arduino-cli)]:https://github.com/arduino/arduino-cli
+[String Class]:https://www.arduino.cc/reference/tr/language/variables/data-types/stringobject/
+[ATmega328P]:https://www.microchip.com/wwwproducts/en/ATmega328p

@@ -1,6 +1,6 @@
 # Simple Serial Protocol for Arduino
-Easy and robust general purpose serial communication for PC side applications and Arduino(-compatible) devices.
-Arduino implementation of our [Simple Serial Protocol]
+Provides easy and robust general purpose serial communication for PC side applications and 
+Arduino(-compatible) devices. Arduino implementation of [Simple Serial Protocol].
 
 ## Install this Arduino library
 ### Manual method
@@ -10,7 +10,7 @@ Your Arduino libraries folder depends on your operating system (and maybe custom
 `C:\Users\<username>\Documents\Arduino\libraries\`
 #### Linux
 `/home/<username>/Arduino/libraries/`
-#### macOs
+#### macOS
 `/Users/<username>/Documents/Arduino/libraries/`
 
 ## Usage example (echo_example sketch)
@@ -29,47 +29,54 @@ void onReceivedSomething();
 const long BAUDRATE = 9600; // speed of serial connection
 const long CHARACTER_TIMEOUT = 500; // wait max 500 ms between single chars to be received
 
-// inintialize command constants
+// initialize command constants
 const char COMMAND_ID_RECEIVE = 'r';
 const char COMMAND_ID_SEND = 's';
 
-// create instance. pass Serial instance define command id range within ssp is listening
+// Create instance. Pass Serial instance. Define command id range within Simple Serial Protocol is listening (here: a - z)
 SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 // alternatively u can create an instance of SoftwareSerial
-// (https://www.arduino.cc/en/Reference/SoftwareSerial)
-// example:
+// https://www.arduino.cc/en/Reference/SoftwareSerial
 // #include <SoftwareSerial.h>
 // SoftwareSerial swSerial(2, 3); // RX, TX
 // SimpleSerialProtocol ssp(swSerial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 void setup() {
-    // init ssp. ssp is calling Serial.begin(9600); behind the scenes
+    // init ssp. ssp is calling 'Serial.begin(9600)' behind the scenes
     ssp.init();
-    // if message command with 'r' is received, callback will be called
+    // if message command with 'r' is received, the given callback will be called
     ssp.registerCommand(COMMAND_ID_RECEIVE, onReceivedSomething);
 }
 
 void loop() {
-    // polling if received bytes available
+    // polling for available bytes
     ssp.loop();
 }
 
-// callbacks (deaclared at top)
+// callbacks implementation
 void onReceivedSomething() {
+
+    //
+    // Receive data
+    //
 
     // read and create buffer for received string
     const int maxStringLength = 50;
     char someString[maxStringLength];
+
+    // reads the string from serial and writes it to 'someString'
     ssp.readCharArray(someString, maxStringLength);
 
     // read received float
     float someFloatingPointValue = ssp.readFloat();
 
-    // read and expect the end-of-transmission byte. important, dont forget
+    // read and expect the end-of-transmission byte. important, don't forget!
     ssp.readEot();
 
-    //send answer
+    //
+    // Send answer
+    //
     ssp.writeCommand(COMMAND_ID_SEND);
     ssp.writeCharArray(someString);
     ssp.writeFloat(someFloatingPointValue);
@@ -81,6 +88,7 @@ void onError(unsigned int errorNum) {
     // https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 }
 ```
+
 In this example, the text buffer is limited to 50 chars: `const int maxStringLength = 50;`.
 Means **49** chars maximum text length. 
 Amount of 49 characters should not be exceeded because 
@@ -102,7 +110,7 @@ Arduino device's memory is low.
 Receiving long strings needs memory (1 byte per char) because of buffering every single character. 
 Keep this in mind.
 Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
-which is restricted to 2,048kB of internal memory. 
+which are restricted to 2,048kB of internal memory. 
 
 ## Plans for the next release(s): 
 * Hardening: 

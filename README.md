@@ -1,20 +1,24 @@
 # Simple Serial Protocol for Arduino
-Easy and robust general purpose serial communication for PC side applications and Arduino(-compatible) devices.
-Arduino implementation of our [Simple Serial Protocol]
+Provides easy and robust general purpose serial communication for PC side applications and 
+Arduino(-compatible) devices. Arduino implementation of [Simple Serial Protocol].
 
-### install
-copy `SimpleSerialProtocol` folder from this repo to ur arduino libraries folder
-or if u are using the Arduino app `Tools->Library Manager` and search for `SimpleSerialProtocol`  
-!!!!!!!! muss noch in die arduino registry
+## Install this Arduino library
+### Manual method
+Copy `SimpleSerialProtocol` folder from this repo into your arduino libraries location. 
+Your Arduino libraries folder depends on your operating system (and maybe custom path settings). Default path is:
+#### Windows 7/8/10:
+`C:\Users\<username>\Documents\Arduino\libraries\`
+#### Linux
+`/home/<username>/Arduino/libraries/`
+#### macOS
+`/Users/<username>/Documents/Arduino/libraries/`
 
-## usage example
-This example receives two values from PC-side or other arduinos-microntrollers and sends them back. 
-The first value is an text of max 50 chars length (in this example. more is possible).
-The second value is an floating point value. We have choosen 3.14159265359.
-This example can be found as npm application in the `simple-serial-protocol-arduino/examples/echo_example` sketch folder.
-This example corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
+## Usage example (echo_example sketch)
+This example receives two values from PC-side and sends them back immediately. 
+The first value is a text. 
+The second value is a floating point value.
 
-```arduino
+```c++
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
@@ -25,47 +29,54 @@ void onReceivedSomething();
 const long BAUDRATE = 9600; // speed of serial connection
 const long CHARACTER_TIMEOUT = 500; // wait max 500 ms between single chars to be received
 
-// inintialize command constants
+// initialize command constants
 const char COMMAND_ID_RECEIVE = 'r';
 const char COMMAND_ID_SEND = 's';
 
-// create instance. pass Serial instance define command id range within ssp is listening
+// Create instance. Pass Serial instance. Define command id range within Simple Serial Protocol is listening (here: a - z)
 SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 // alternatively u can create an instance of SoftwareSerial
-// (https://www.arduino.cc/en/Reference/SoftwareSerial)
-// example:
+// https://www.arduino.cc/en/Reference/SoftwareSerial
 // #include <SoftwareSerial.h>
 // SoftwareSerial swSerial(2, 3); // RX, TX
 // SimpleSerialProtocol ssp(swSerial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 void setup() {
-    // init ssp. ssp is calling Serial.begin(9600); behind the scenes
+    // init ssp. ssp is calling 'Serial.begin(9600)' behind the scenes
     ssp.init();
-    // if message command with 'r' is received, callback will be called
+    // if message command with 'r' is received, the given callback will be called
     ssp.registerCommand(COMMAND_ID_RECEIVE, onReceivedSomething);
 }
 
 void loop() {
-    // polling if received bytes available
+    // polling for available bytes
     ssp.loop();
 }
 
-// declare callbacks
+// callbacks implementation
 void onReceivedSomething() {
+
+    //
+    // Receive data
+    //
 
     // read and create buffer for received string
     const int maxStringLength = 50;
     char someString[maxStringLength];
+
+    // reads the string from serial and writes it to 'someString'
     ssp.readCharArray(someString, maxStringLength);
 
     // read received float
     float someFloatingPointValue = ssp.readFloat();
 
-    // read and expect the end-of-transmission byte. important, dont forget
+    // read and expect the end-of-transmission byte. important, don't forget!
     ssp.readEot();
 
-    //send answer
+    //
+    // Send answer
+    //
     ssp.writeCommand(COMMAND_ID_SEND);
     ssp.writeCharArray(someString);
     ssp.writeFloat(someFloatingPointValue);
@@ -78,18 +89,43 @@ void onError(unsigned int errorNum) {
 }
 ```
 
+In this example, the text buffer is limited to 50 chars: `const int maxStringLength = 50;`.
+Means **49** chars maximum text length. 
+Amount of 49 characters should not be exceeded because 
+1 byte is reserved for end-of-string byte.
+
+This example can be found as Arduino sketch within the `simple-serial-protocol-arduino/examples/echo_example` folder.
+It corresponds with Node.js echo example at [Simple Serial Protocol for Node.js].
+
 ## HardwareSerial and SoftwareSerial support
 Just use [Serial (HardwareSerial)] (recommended) or [SoftwareSerial Library].
 Both libs are based on [Arduino's Stream implementation].
 
-## arduino-cli support (hint)
-We primarily compile and upload our Arduino sketches with [arduino-cli].
-That project is great stuff. fresh stuff.
+## Arduino-CLI (arduino-cli) support 
+We primarily compile and upload our Arduino sketches with [Arduino-CLI (arduino-cli)].
+That project is great stuff. Fresh stuff.
 
-## links
+## Limitations
+Arduino device's memory is low.
+Receiving long strings needs memory (1 byte per char) because of buffering every single character. 
+Keep this in mind.
+Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
+which are restricted to 2,048kB of internal memory. 
+
+## Plans for the next release(s): 
+* Hardening: 
+    * Text Comunication with fixed buffer size and resulting error, if buffer exceeded.
+    Count length while receiving and reading chars from incoming stream.
+* Features:
+    * Easy install option: Provide this library in the Arduino app's built-in Library Manager, too.
+    * Arduino [String Class] compatibilty (char array / c-string only at the moment)
+
+## Links
 [Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 [Simple Serial Protocol for Node.js]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-node
 [Serial (HardwareSerial)]:https://www.arduino.cc/reference/en/language/functions/communication/serial/
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
-[arduino-cli]:https://github.com/arduino/arduino-cli
+[Arduino-CLI (arduino-cli)]:https://github.com/arduino/arduino-cli
+[String Class]:https://www.arduino.cc/reference/tr/language/variables/data-types/stringobject/
+[ATmega328P]:https://www.microchip.com/wwwproducts/en/ATmega328p

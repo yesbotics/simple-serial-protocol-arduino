@@ -144,15 +144,6 @@ Keep this in mind.
 Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
 which are restricted to 2,048kB of internal memory. 
 
-## Plans for the next release(s): 
-* Hardening: 
-    * Text Comunication with fixed buffer size and resulting error, if buffer exceeded.
-    Count length while receiving and reading chars from incoming stream.
-* Features:
-    * int64_t / uint64_t support
-    * Easy install option: Provide this library in the Arduino app's built-in Library Manager, too.
-    * Arduino [String Class] compatibilty (char array / c-string only at the moment)
-
 ## Links
 [Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 [Simple Serial Protocol for Node.js]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-node
@@ -160,5 +151,4 @@ which are restricted to 2,048kB of internal memory.
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
 [Arduino-CLI (arduino-cli)]:https://github.com/arduino/arduino-cli
-[String Class]:https://www.arduino.cc/reference/tr/language/variables/data-types/stringobject/
 [ATmega328P]:https://www.microchip.com/wwwproducts/en/ATmega328p

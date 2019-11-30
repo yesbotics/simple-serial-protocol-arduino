@@ -21,7 +21,6 @@ void Core::afterConstructor(unsigned int streamType, unsigned long baudrate, uns
 }
 
 void Core::init() {
-
     if (this->streamType == STREAM_TYPE_HARDWARESERIAL) {
         ((HardwareSerial *) this->streamPointer)->begin(this->baudrate);
         return;

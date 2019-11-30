@@ -117,6 +117,7 @@ which are restricted to 2,048kB of internal memory.
     * Text Comunication with fixed buffer size and resulting error, if buffer exceeded.
     Count length while receiving and reading chars from incoming stream.
 * Features:
+    * int64_t / uint64_t support
     * Easy install option: Provide this library in the Arduino app's built-in Library Manager, too.
     * Arduino [String Class] compatibilty (char array / c-string only at the moment)
 

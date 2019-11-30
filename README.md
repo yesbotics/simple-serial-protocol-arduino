@@ -1,6 +1,6 @@
 # Simple Serial Protocol for Arduino
 Provides easy and robust general purpose serial communication between PC side applications and 
-Arduino(-compatible) devices. Arduino implementation of [Simple Serial Protocol].
+Arduino(-compatible) devices. This lib is the Arduino implementation of [Simple Serial Protocol].
 
 ## Install this Arduino library
 ### Manual method

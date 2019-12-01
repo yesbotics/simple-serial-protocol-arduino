@@ -48,6 +48,8 @@ void onReceivedSomething() {
     uint16_t smallUnsignedInt = ssp.readUnsignedInt16();
     int32_t signedInt = ssp.readInt32();
     uint32_t unsignedInt = ssp.readUnsignedInt32();
+    int64_t bigSignedInt = ssp.readInt64();
+    uint64_t bigUnsignedInt = ssp.readUnsignedInt64();
     float floatValue = ssp.readFloat();
     char charValue = ssp.readChar();
 
@@ -71,6 +73,8 @@ void onReceivedSomething() {
     ssp.writeUnsignedInt16(smallUnsignedInt);
     ssp.writeInt32(signedInt);
     ssp.writeUnsignedInt32(unsignedInt);
+    ssp.writeInt64(bigSignedInt);
+    ssp.writeUnsignedInt64(bigUnsignedInt);
     ssp.writeFloat(floatValue);
     ssp.writeChar(charValue);
     ssp.writeCharArray(stringValue);

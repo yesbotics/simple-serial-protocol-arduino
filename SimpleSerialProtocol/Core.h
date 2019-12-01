@@ -74,6 +74,14 @@ public:
     uint32_t readUnsignedInt32();
     void writeUnsignedInt32(const uint32_t num);
 
+    // -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+    int64_t readInt64();
+    void writeInt64(const int64_t num);
+
+    // 0 to 18,446,744,073,709,551,615
+    uint64_t readUnsignedInt64();
+    void writeUnsignedInt64(const uint64_t num);
+
     // -3.402,823,4 * 10^38 to 3.402,823,4 * 10^38
 	float readFloat();
 	void writeFloat(const float f);

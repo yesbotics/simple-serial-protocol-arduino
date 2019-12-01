@@ -4,7 +4,7 @@ Arduino(-compatible) devices. This lib is the Arduino implementation of [Simple 
 
 ## Install this Arduino library
 ### Manual method
-Copy `SimpleSerialProtocol` folder from this repo into your arduino libraries location. 
+Copy this repo folder into your arduino libraries location, and rename it to `SimpleSerialProtocol`. 
 Your Arduino libraries folder depends on your operating system (and maybe custom path settings). Default path is:
 #### Windows 7/8/10:
 `C:\Users\<username>\Documents\Arduino\libraries\`

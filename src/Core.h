@@ -19,6 +19,7 @@ const unsigned int STREAM_TYPE_SOFTWARESERIAL = 2;
 #endif
 
 const byte CHAR_NULL = 0x00; // 0 // End of String
+const uint8_t MAX_CHARARRAY_LENGTH = 254;
 
 #ifdef SOFTWARESERIAL_SUPPORTED
 #include <SoftwareSerial.h>
@@ -47,7 +48,7 @@ public:
 	void writeChar(const char ch);
 
 	// text / string
-	void readCharArray(char *output, uint8_t maxLength);
+	bool readCharArray(char *output, uint8_t maxLength);
 	void writeCharArray(const char *charArray);
 
 	// -128 to 127

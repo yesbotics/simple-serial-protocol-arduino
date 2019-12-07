@@ -34,13 +34,17 @@ const char COMMAND_ID_SEND = 's';
 // Create instance. Pass Serial instance. Define command id range within Simple Serial Protocol is listening (here: a - z)
 SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
-// alternatively u can create an instance of SoftwareSerial
+// Aternatively you can create an instance of SoftwareSerial
 // https://www.arduino.cc/en/Reference/SoftwareSerial
 // #include <SoftwareSerial.h>
 // SoftwareSerial swSerial(2, 3); // RX, TX
 // SimpleSerialProtocol ssp(swSerial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 void setup() {
+    // prepare LED and set it off
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LOW);
+
     // init ssp. ssp is calling 'Serial.begin(9600)' behind the scenes
     ssp.init();
     // if message command with 'r' is received, the given callback will be called
@@ -58,7 +62,6 @@ void onReceivedSomething() {
     //
     // Receive data
     //
-
     byte byteValue = ssp.readByte();
     bool booleanValue = ssp.readBool();
     int8_t tinySignedInt = ssp.readInt8();
@@ -67,8 +70,11 @@ void onReceivedSomething() {
     uint16_t smallUnsignedInt = ssp.readUnsignedInt16();
     int32_t signedInt = ssp.readInt32();
     uint32_t unsignedInt = ssp.readUnsignedInt32();
+    int64_t bigSignedInt = ssp.readInt64();
+    uint64_t bigUnsignedInt = ssp.readUnsignedInt64();
     float floatValue = ssp.readFloat();
     char charValue = ssp.readChar();
+
 
     const int stringBufferSize = 50; // means max. 49 chars length, 1 byte is reserved for end of string byte
     char stringValue[stringBufferSize]; // create buffer char array
@@ -79,9 +85,8 @@ void onReceivedSomething() {
     //
     // Send answer
     //
-
     ssp.writeCommand(COMMAND_ID_SEND); // start command with command id
-    
+
     ssp.writeByte(byteValue);
     ssp.writeBool(booleanValue);
     ssp.writeInt8(tinySignedInt);
@@ -90,6 +95,8 @@ void onReceivedSomething() {
     ssp.writeUnsignedInt16(smallUnsignedInt);
     ssp.writeInt32(signedInt);
     ssp.writeUnsignedInt32(unsignedInt);
+    ssp.writeInt64(bigSignedInt);
+    ssp.writeUnsignedInt64(bigUnsignedInt);
     ssp.writeFloat(floatValue);
     ssp.writeChar(charValue);
     ssp.writeCharArray(stringValue);
@@ -98,8 +105,7 @@ void onReceivedSomething() {
 }
 
 void onError(unsigned int errorNum) {
-    // error numbers are explained within Simple Serial Protocol's documentation at:
-    // https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
+    digitalWrite(LED_BUILTIN, HIGH);
 }
 ```
 

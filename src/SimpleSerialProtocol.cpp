@@ -222,11 +222,12 @@ void SimpleSerialProtocol::registerCommand(const byte command, CallbackPointer c
     this->registerCommandCallback(command, callbackPointer);
 }
 
-void SimpleSerialProtocol::readCharArray(char *output, uint8_t maxLength) {
-    bool successful = Core::readCharArray(output, maxLength);
+bool SimpleSerialProtocol::readCString(char *output, uint8_t maxLength) {
+    bool successful = Core::readCString(output, maxLength);
     if (!successful) {
         this->error(ERROR_END_OF_STRING_BYTE_NOT_IN_CHAR_ARRAY, true);
     }
+    return successful;
 }
 
 /***************************** PROTECTED *********************************/

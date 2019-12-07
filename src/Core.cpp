@@ -201,8 +201,8 @@ bool Core::readCString(char *output, uint8_t maxLength) {
     return stringComplete;
 }
 
-String Core::readString() {
-    const int stringBufferSize = MAX_CHARARRAY_LENGTH;
+String Core::readString(uint8_t maxLength) {
+    const uint8_t stringBufferSize = maxLength;
     char charArrayValue[stringBufferSize];
     this->readCString(charArrayValue, stringBufferSize);
     return String(charArrayValue);

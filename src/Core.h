@@ -52,7 +52,7 @@ public:
 	void writeCString(const char *charArray);
 
     // text / string - String
-    String readString();
+    String readString(uint8_t maxLength = MAX_CHARARRAY_LENGTH);
 	void writeString(const String &string);
 
 	// -128 to 127

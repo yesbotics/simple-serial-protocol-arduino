@@ -33,7 +33,7 @@ typedef union {
 class Core {
 
 public:
-	void init();
+	virtual void init();
 
     // single byte value
 	byte readByte();

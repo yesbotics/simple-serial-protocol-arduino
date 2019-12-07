@@ -14,7 +14,7 @@ Your Arduino libraries folder depends on your operating system (and maybe custom
 `/Users/<username>/Documents/Arduino/libraries/`
 
 ## Usage example (echo_example sketch)
-This example receives all supported datatype values from PC-side and sends them back immediately. 
+This example receives values of each supported datatype and sends them back immediately. 
 
 ```c++
 #include <SimpleSerialProtocol.h>

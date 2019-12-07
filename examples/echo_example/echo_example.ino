@@ -43,7 +43,7 @@ void onReceivedSomething() {
     //
     // Receive data
     //
-    byte byteValue = ssp.readByte();
+    byte byteValue = ssp.readByte(); // Arduino's byte: https://www.arduino.cc/reference/en/language/variables/data-types/byte/
     bool booleanValue = ssp.readBool();
     int8_t tinySignedInt = ssp.readInt8();
     uint8_t tinyUnsignedInt = ssp.readUnsignedInt8();
@@ -55,9 +55,16 @@ void onReceivedSomething() {
     uint64_t bigUnsignedInt = ssp.readUnsignedInt64();
     float floatValue = ssp.readFloat();
     char charValue = ssp.readChar();
-    String stringValue = ssp.readString();
 
-    const int stringBufferSize = 50; // means max. 49 chars length, 1 byte is reserved for end of string byte
+    // string is special, beacuse of its variable length (overall maximum size is 255)
+    // max. 49 chars length, 1 byte is reserved for end of string byte
+    const uint8_t stringBufferSize = 50;
+
+    // you can interpret strings as
+    // Arduino's String Object https://www.arduino.cc/reference/en/language/variables/data-types/stringobject/
+    String stringValue = ssp.readString(stringBufferSize);
+
+    // or as a plain char array / c-string
     char cstringValue[stringBufferSize]; // create buffer char array
     ssp.readCString(cstringValue, stringBufferSize); // read chars from stream, fill buffer
 

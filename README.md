@@ -74,11 +74,11 @@ void onReceivedSomething() {
     uint64_t bigUnsignedInt = ssp.readUnsignedInt64();
     float floatValue = ssp.readFloat();
     char charValue = ssp.readChar();
-
+    String stringValue = ssp.readString();
 
     const int stringBufferSize = 50; // means max. 49 chars length, 1 byte is reserved for end of string byte
-    char stringValue[stringBufferSize]; // create buffer char array
-    ssp.readCharArray(stringValue, stringBufferSize); // read chars from stream, fill buffer
+    char cstringValue[stringBufferSize]; // create buffer char array
+    ssp.readCString(cstringValue, stringBufferSize); // read chars from stream, fill buffer
 
     ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 
@@ -99,7 +99,8 @@ void onReceivedSomething() {
     ssp.writeUnsignedInt64(bigUnsignedInt);
     ssp.writeFloat(floatValue);
     ssp.writeChar(charValue);
-    ssp.writeCharArray(stringValue);
+    ssp.writeString(stringValue);
+    ssp.writeCString(cstringValue);
 
     ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }

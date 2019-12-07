@@ -114,7 +114,7 @@ public:
     void writeEot();
 
     // Override from Core
-    void readCharArray(char *output, uint8_t maxLength);
+    bool readCString(char *output, uint8_t maxLength);
 
 protected:
 

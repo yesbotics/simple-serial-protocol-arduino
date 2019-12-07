@@ -1,10 +1,10 @@
 # Simple Serial Protocol for Arduino
-Provides easy and robust general purpose serial communication for PC side applications and 
-Arduino(-compatible) devices. Arduino implementation of [Simple Serial Protocol].
+Provides easy and robust general purpose serial communication between PC side applications and 
+Arduino(-compatible) devices. This lib is the Arduino implementation of [Simple Serial Protocol].
 
 ## Install this Arduino library
 ### Manual method
-Copy `SimpleSerialProtocol` folder from this repo into your arduino libraries location. 
+Copy this repo folder into your arduino libraries location, and rename it to `SimpleSerialProtocol`. 
 Your Arduino libraries folder depends on your operating system (and maybe custom path settings). Default path is:
 #### Windows 7/8/10:
 `C:\Users\<username>\Documents\Arduino\libraries\`
@@ -14,9 +14,7 @@ Your Arduino libraries folder depends on your operating system (and maybe custom
 `/Users/<username>/Documents/Arduino/libraries/`
 
 ## Usage example (echo_example sketch)
-This example receives two values from PC-side and sends them back immediately. 
-The first value is a text. 
-The second value is a floating point value.
+This example receives all supported datatype values from PC-side and sends them back immediately. 
 
 ```c++
 #include <SimpleSerialProtocol.h>
@@ -61,26 +59,42 @@ void onReceivedSomething() {
     // Receive data
     //
 
-    // read and create buffer for received string
-    const int maxStringLength = 50;
-    char someString[maxStringLength];
+    byte byteValue = ssp.readByte();
+    bool booleanValue = ssp.readBool();
+    int8_t tinySignedInt = ssp.readInt8();
+    uint8_t tinyUnsignedInt = ssp.readUnsignedInt8();
+    int16_t smallSignedInt = ssp.readInt16();
+    uint16_t smallUnsignedInt = ssp.readUnsignedInt16();
+    int32_t signedInt = ssp.readInt32();
+    uint32_t unsignedInt = ssp.readUnsignedInt32();
+    float floatValue = ssp.readFloat();
+    char charValue = ssp.readChar();
 
-    // reads the string from serial and writes it to 'someString'
-    ssp.readCharArray(someString, maxStringLength);
+    const int stringBufferSize = 50; // means max. 49 chars length, 1 byte is reserved for end of string byte
+    char stringValue[stringBufferSize]; // create buffer char array
+    ssp.readCharArray(stringValue, stringBufferSize); // read chars from stream, fill buffer
 
-    // read received float
-    float someFloatingPointValue = ssp.readFloat();
-
-    // read and expect the end-of-transmission byte. important, don't forget!
-    ssp.readEot();
+    ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 
     //
     // Send answer
     //
-    ssp.writeCommand(COMMAND_ID_SEND);
-    ssp.writeCharArray(someString);
-    ssp.writeFloat(someFloatingPointValue);
-    ssp.writeEot(); //end of transmission
+
+    ssp.writeCommand(COMMAND_ID_SEND); // start command with command id
+    
+    ssp.writeByte(byteValue);
+    ssp.writeBool(booleanValue);
+    ssp.writeInt8(tinySignedInt);
+    ssp.writeUnsignedInt8(tinyUnsignedInt);
+    ssp.writeInt16(smallSignedInt);
+    ssp.writeUnsignedInt16(smallUnsignedInt);
+    ssp.writeInt32(signedInt);
+    ssp.writeUnsignedInt32(unsignedInt);
+    ssp.writeFloat(floatValue);
+    ssp.writeChar(charValue);
+    ssp.writeCharArray(stringValue);
+
+    ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }
 
 void onError(unsigned int errorNum) {
@@ -112,14 +126,6 @@ Keep this in mind.
 Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]), 
 which are restricted to 2,048kB of internal memory. 
 
-## Plans for the next release(s): 
-* Hardening: 
-    * Text Comunication with fixed buffer size and resulting error, if buffer exceeded.
-    Count length while receiving and reading chars from incoming stream.
-* Features:
-    * Easy install option: Provide this library in the Arduino app's built-in Library Manager, too.
-    * Arduino [String Class] compatibilty (char array / c-string only at the moment)
-
 ## Links
 [Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
 [Simple Serial Protocol for Node.js]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-node
@@ -127,5 +133,4 @@ which are restricted to 2,048kB of internal memory.
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
 [Arduino-CLI (arduino-cli)]:https://github.com/arduino/arduino-cli
-[String Class]:https://www.arduino.cc/reference/tr/language/variables/data-types/stringobject/
 [ATmega328P]:https://www.microchip.com/wwwproducts/en/ATmega328p

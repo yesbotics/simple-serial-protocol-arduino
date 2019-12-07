@@ -1,3 +1,4 @@
 .idea
+*.iml
 .project
-simple-serial-protocol-arduino.iml
+

@@ -40,26 +40,46 @@ void onReceivedSomething() {
     // Receive data
     //
 
-    // read and create buffer for received string
-    const int maxStringLength = 50;
-    char someString[maxStringLength];
+    byte byteValue = ssp.readByte();
+    bool booleanValue = ssp.readBool();
+    int8_t tinySignedInt = ssp.readInt8();
+    uint8_t tinyUnsignedInt = ssp.readUnsignedInt8();
+    int16_t smallSignedInt = ssp.readInt16();
+    uint16_t smallUnsignedInt = ssp.readUnsignedInt16();
+    int32_t signedInt = ssp.readInt32();
+    uint32_t unsignedInt = ssp.readUnsignedInt32();
+    int64_t bigSignedInt = ssp.readInt64();
+    uint64_t bigUnsignedInt = ssp.readUnsignedInt64();
+    float floatValue = ssp.readFloat();
+    char charValue = ssp.readChar();
 
-    // reads the string from serial and writes it to 'someString'
-    ssp.readCharArray(someString, maxStringLength);
+    const int stringBufferSize = 50; // means max. 49 chars length, 1 byte is reserved for end of string byte
+    char stringValue[stringBufferSize]; // create buffer char array
+    ssp.readCharArray(stringValue, stringBufferSize); // read chars from stream, fill buffer
 
-    // read received float
-    float someFloatingPointValue = ssp.readFloat();
-
-    // read and expect the end-of-transmission byte. important, don't forget!
-    ssp.readEot();
+    ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 
     //
     // Send answer
     //
-    ssp.writeCommand(COMMAND_ID_SEND);
-    ssp.writeCharArray(someString);
-    ssp.writeFloat(someFloatingPointValue);
-    ssp.writeEot(); //end of transmission
+
+    ssp.writeCommand(COMMAND_ID_SEND); // start command with command id
+
+    ssp.writeByte(byteValue);
+    ssp.writeBool(booleanValue);
+    ssp.writeInt8(tinySignedInt);
+    ssp.writeUnsignedInt8(tinyUnsignedInt);
+    ssp.writeInt16(smallSignedInt);
+    ssp.writeUnsignedInt16(smallUnsignedInt);
+    ssp.writeInt32(signedInt);
+    ssp.writeUnsignedInt32(unsignedInt);
+    ssp.writeInt64(bigSignedInt);
+    ssp.writeUnsignedInt64(bigUnsignedInt);
+    ssp.writeFloat(floatValue);
+    ssp.writeChar(charValue);
+    ssp.writeCharArray(stringValue);
+
+    ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }
 
 void onError(unsigned int errorNum) {

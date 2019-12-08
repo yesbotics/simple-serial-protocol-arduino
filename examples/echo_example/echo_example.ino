@@ -57,7 +57,7 @@ void onReceivedSomething() {
     char charValue = ssp.readChar();
 
     // string is special, because of its variable length (overall maximum size is 255)
-    // performance notice: needs 50 bytes of Arduino's RAM each time you read a byte
+    // performance note: in this example 50 bytes of Arduino's RAM is used - each time you read a string
 
     // max. 49 chars length, 1 byte is reserved for end of string byte
     const uint8_t stringBufferSize = 50;

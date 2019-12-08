@@ -41,7 +41,7 @@ void loop() {
 void onReceivedSomething() {
 
     //
-    // Receive data
+    // Receive Data
     //
     byte byteValue = ssp.readByte(); // Arduino's byte: https://www.arduino.cc/reference/en/language/variables/data-types/byte/
     bool booleanValue = ssp.readBool();

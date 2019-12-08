@@ -64,16 +64,18 @@ void onReceivedSomething() {
 
     // you can interpret strings as
     // Arduino's String Object https://www.arduino.cc/reference/en/language/variables/data-types/stringobject/
-    String stringValue = ssp.readString(stringBufferSize);
+    String text1 = ssp.readString(stringBufferSize);
 
     // or as a plain char array / c-string
-    char cstringValue[stringBufferSize]; // create buffer char array
-    ssp.readCString(cstringValue, stringBufferSize); // read chars from stream, fill buffer
+    char text2[stringBufferSize]; // create buffer char array
+    ssp.readCString(text2, stringBufferSize); // read chars from stream, fill buffer
 
+    // again an Arduino String Object
+    String text3 = ssp.readString(stringBufferSize);
     ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 
     //
-    // Send answer
+    // Immediately send back all received and interpreted values
     //
     ssp.writeCommand(COMMAND_ID_SEND); // start command with command id
 
@@ -89,8 +91,9 @@ void onReceivedSomething() {
     ssp.writeUnsignedInt64(bigUnsignedInt);
     ssp.writeFloat(floatValue);
     ssp.writeChar(charValue);
-    ssp.writeString(stringValue);
-    ssp.writeCString(cstringValue);
+    ssp.writeString(text1);
+    ssp.writeCString(text2);
+    ssp.writeString(text3);
 
     ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }

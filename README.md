@@ -65,10 +65,10 @@ void loop() {
 void onReceivedSomething() {
 
     //
-    // Receive data
+    // Receive Data
     //
     byte byteValue = ssp.readByte(); // Arduino's byte: https://www.arduino.cc/reference/en/language/variables/data-types/byte/
-    bool booleanValue = ssp.readBool(); 
+    bool booleanValue = ssp.readBool();
     int8_t tinySignedInt = ssp.readInt8();
     uint8_t tinyUnsignedInt = ssp.readUnsignedInt8();
     int16_t smallSignedInt = ssp.readInt16();
@@ -80,22 +80,27 @@ void onReceivedSomething() {
     float floatValue = ssp.readFloat();
     char charValue = ssp.readChar();
 
-    // string is special, beacuse of its variable length (overall maximum size is 255)
+    // string is special, because of its variable length (overall maximum size is 255, means 254 characters text length)
+    // performance note: in this example 50 bytes of Arduino's RAM is used - each time you read a string
+
     // max. 49 chars length, 1 byte is reserved for end of string byte
     const uint8_t stringBufferSize = 50;
 
     // you can interpret strings as
     // Arduino's String Object https://www.arduino.cc/reference/en/language/variables/data-types/stringobject/
-    String stringValue = ssp.readString(stringBufferSize);
+    String text1 = ssp.readString(stringBufferSize);
 
     // or as a plain char array / c-string
-    char cstringValue[stringBufferSize]; // create buffer char array
-    ssp.readCString(cstringValue, stringBufferSize); // read chars from stream, fill buffer
+    char text2[stringBufferSize]; // create buffer char array
+    ssp.readCString(text2, stringBufferSize); // read chars from stream, fill buffer
 
+    // again an Arduino String Object
+    String text3 = ssp.readString(stringBufferSize);
+    
     ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 
     //
-    // Send answer
+    // Immediately send back all received and interpreted values
     //
     ssp.writeCommand(COMMAND_ID_SEND); // start command with command id
 
@@ -111,8 +116,9 @@ void onReceivedSomething() {
     ssp.writeUnsignedInt64(bigUnsignedInt);
     ssp.writeFloat(floatValue);
     ssp.writeChar(charValue);
-    ssp.writeString(stringValue);
-    ssp.writeCString(cstringValue);
+    ssp.writeString(text1);
+    ssp.writeCString(text2);
+    ssp.writeString(text3);
 
     ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }

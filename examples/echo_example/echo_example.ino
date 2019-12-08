@@ -56,7 +56,7 @@ void onReceivedSomething() {
     float floatValue = ssp.readFloat();
     char charValue = ssp.readChar();
 
-    // string is special, because of its variable length (overall maximum size is 255)
+    // string is special, because of its variable length (overall maximum size is 255, means 254 characters text length)
     // performance note: in this example 50 bytes of Arduino's RAM is used - each time you read a string
 
     // max. 49 chars length, 1 byte is reserved for end of string byte
@@ -72,6 +72,7 @@ void onReceivedSomething() {
 
     // again an Arduino String Object
     String text3 = ssp.readString(stringBufferSize);
+
     ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 
     //

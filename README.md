@@ -33,11 +33,11 @@ const long BAUDRATE = 9600; // speed of serial connection
 const long CHARACTER_TIMEOUT = 500; // wait max 500 ms between single chars to be received
 
 // initialize command constants
-const char COMMAND_ID_RECEIVE = 'r';
-const char COMMAND_ID_SEND = 's';
+const byte COMMAND_ID_RECEIVE = 'r';
+const byte COMMAND_ID_SEND = 's';
 
-// Create instance. Pass Serial instance. Define command id range within Simple Serial Protocol is listening (here: a - z)
-SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
+// Create instance. Pass Serial instance. Define command-id-range within Simple Serial Protocol is listening (here: a - z)
+SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z'); // ASCII: 'a' - 'z' (26 byes of RAM is reserved)
 
 // Aternatively you can create an instance of SoftwareSerial
 // https://www.arduino.cc/en/Reference/SoftwareSerial
@@ -53,7 +53,7 @@ void setup() {
     // init ssp. ssp is calling 'Serial.begin(9600)' behind the scenes
     ssp.init();
     // if message command with 'r' is received, the given callback will be called
-    ssp.registerCommand(COMMAND_ID_RECEIVE, onReceivedSomething);
+    ssp.registerCommand(COMMAND_ID_RECEIVE, onReceivedValues);
 }
 
 void loop() {
@@ -62,7 +62,7 @@ void loop() {
 }
 
 // callbacks implementation
-void onReceivedSomething() {
+void onReceivedValues() {
 
     //
     // Receive Data

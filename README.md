@@ -2,6 +2,11 @@
 Provides easy and robust general purpose serial communication between PC side applications and 
 Arduino(-compatible) devices. This lib is the Arduino implementation of [Simple Serial Protocol].
 
+## Requirements
+Arduino 1.5+ Environment
+* Use the [Arduino-IDE]
+* or enjoy advantage of using Arduino via command-line interface: [Arduino-CLI (arduino-cli)]
+
 ## Install this Arduino library
 ### Manual method
 Copy this repo folder into your arduino libraries location, and rename it to `SimpleSerialProtocol`. 
@@ -147,5 +152,6 @@ which are restricted to 2,048kB of internal memory.
 [Serial (HardwareSerial)]:https://www.arduino.cc/reference/en/language/functions/communication/serial/
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/
+[Arduino-IDE]:https://www.arduino.cc/en/main/software
 [Arduino-CLI (arduino-cli)]:https://github.com/arduino/arduino-cli
 [ATmega328P]:https://www.microchip.com/wwwproducts/en/ATmega328p

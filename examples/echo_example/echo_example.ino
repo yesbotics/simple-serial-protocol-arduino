@@ -71,7 +71,9 @@ void onReceivedSomething() {
     ssp.readCString(text2, stringBufferSize); // read chars from stream, fill buffer
 
     // again an Arduino String Object
-    String text3 = ssp.readString(stringBufferSize);
+    // this time without custom maximum length
+    // max. 254 chars length, 1 byte is reserved for end of string byte
+    String text3 = ssp.readString();
 
     ssp.readEot(); // read and expect the end-of-transmission byte. important, don't forget!
 

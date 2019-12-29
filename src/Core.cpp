@@ -28,7 +28,8 @@ void Core::init() {
 
 #ifdef SOFTWARESERIAL_SUPPORTED
     if (this->streamType == STREAM_TYPE_SOFTWARESERIAL) {
-        ((SoftwareSerial *) this->streamPointer)->begin(this->baudrate);
+        ((SoftwareSerial * )
+        this->streamPointer)->begin(this->baudrate);
     }
 #endif
 }
@@ -186,7 +187,7 @@ void Core::writeFloat(const float f) {
     this->streamPointer->write(binaryFlaot.binary, 4);
 }
 
-void Core::readCharArray(char *output, uint8_t maxLength) {
+bool Core::readCString(char *output, uint8_t maxLength) {
     bool stringComplete = false;
     output[0] = CHAR_NULL;
     uint8_t i = 0;
@@ -197,11 +198,19 @@ void Core::readCharArray(char *output, uint8_t maxLength) {
         stringComplete = currentChar == CHAR_NULL;
         i++;
     }
+    return stringComplete;
 }
 
-void Core::writeCharArray(const char *charArray) {
+String Core::readString(uint8_t maxLength) {
+    const uint8_t stringBufferSize = maxLength;
+    char charArrayValue[stringBufferSize];
+    this->readCString(charArrayValue, stringBufferSize);
+    return String(charArrayValue);
+}
+
+void Core::writeCString(const char *charArray) {
     uint8_t i = 0;
-    const uint8_t max = 250;
+    const uint8_t max = MAX_CHARARRAY_LENGTH;
     char c = charArray[i];
     while (c != '\0' && i < max) {
         this->streamPointer->write(c);
@@ -209,6 +218,10 @@ void Core::writeCharArray(const char *charArray) {
         c = charArray[i];
     }
     this->streamPointer->write(CHAR_NULL);
+}
+
+void Core::writeString(const String &string) {
+    this->writeCString(string.c_str());
 }
 
 /***************************** PRIVATE *********************************/

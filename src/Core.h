@@ -19,6 +19,7 @@ const unsigned int STREAM_TYPE_SOFTWARESERIAL = 2;
 #endif
 
 const byte CHAR_NULL = 0x00; // 0 // End of String
+const uint8_t MAX_CHARARRAY_LENGTH = UINT8_MAX; // 255
 
 #ifdef SOFTWARESERIAL_SUPPORTED
 #include <SoftwareSerial.h>
@@ -32,7 +33,7 @@ typedef union {
 class Core {
 
 public:
-	void init();
+	virtual void init();
 
     // single byte value
 	byte readByte();
@@ -46,9 +47,13 @@ public:
 	char readChar();
 	void writeChar(const char ch);
 
-	// text / string
-	void readCharArray(char *output, uint8_t maxLength);
-	void writeCharArray(const char *charArray);
+	// text / string - char[]
+	virtual bool readCString(char *output, uint8_t maxLength);
+	void writeCString(const char *charArray);
+
+    // text / string - String
+    String readString(uint8_t maxLength = MAX_CHARARRAY_LENGTH);
+	void writeString(const String &string);
 
 	// -128 to 127
     int8_t readInt8();

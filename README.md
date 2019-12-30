@@ -8,7 +8,11 @@ Arduino 1.5+ Environment
 * or enjoy advantage of using Arduino via command-line interface: [Arduino-CLI (arduino-cli)]
 
 ## Install this Arduino library
-### Manual method
+### Via Arduino IDE's built-in Library Manager 
+`Menu -> Tools -> Manage Libraries... -> search for: SimpleSerialProtocol -> choose latest version -> install`
+### Via Arduino CLI's lib command
+`arduino-cli lib install SimpleSerialProtocol`
+### Manual method (Arduino IDE and Arduino CLI)
 Copy this repo folder into your arduino libraries location, and rename it to `SimpleSerialProtocol`. 
 Your Arduino libraries folder depends on your operating system (and maybe custom path settings). Default path is:
 #### Windows 7/8/10:

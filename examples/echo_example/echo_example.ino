@@ -1,8 +1,8 @@
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
-void onError(unsigned int errorNum);
-void onReceivedSomething();
+void onError(uint8_t errorNum);
+void onReceivedValues();
 
 // inintialize hardware constants
 const long BAUDRATE = 9600; // speed of serial connection
@@ -101,6 +101,6 @@ void onReceivedValues() {
     ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }
 
-void onError(unsigned int errorNum) {
+void onError(uint8_t errorNum) {
     digitalWrite(LED_BUILTIN, HIGH);
 }

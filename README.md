@@ -8,7 +8,11 @@ Arduino 1.5+ Environment
 * or enjoy advantage of using Arduino via command-line interface: [Arduino-CLI (arduino-cli)]
 
 ## Install this Arduino library
-### Manual method
+### Via Arduino IDE's built-in Library Manager 
+`Menu -> Tools -> Manage Libraries... -> search for: SimpleSerialProtocol -> choose latest version -> install`
+### Via Arduino CLI's lib command
+`arduino-cli lib install SimpleSerialProtocol`
+### Manual method (Arduino IDE and Arduino CLI)
 Copy this repo folder into your arduino libraries location, and rename it to `SimpleSerialProtocol`. 
 Your Arduino libraries folder depends on your operating system (and maybe custom path settings). Default path is:
 #### Windows 7/8/10:
@@ -25,8 +29,8 @@ This example receives values of each supported datatype and sends them back imme
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
-void onError(unsigned int errorNum);
-void onReceivedSomething();
+void onError(uint8_t errorNum);
+void onReceivedValues();
 
 // inintialize hardware constants
 const long BAUDRATE = 9600; // speed of serial connection
@@ -125,10 +129,9 @@ void onReceivedValues() {
     ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }
 
-void onError(unsigned int errorNum) {
+void onError(uint8_t errorNum) {
     digitalWrite(LED_BUILTIN, HIGH);
 }
-
 ```
 
 In this example, the text buffer is limited to 50 chars: `const int maxStringLength = 50;`.

@@ -1,11 +1,11 @@
 #include <Core.h>
 
-Core::Core(Stream &streamRef, unsigned int streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
+Core::Core(Stream &streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
     this->streamPointer = &streamRef;
     this->afterConstructor(streamType, baudrate, waitForByteTimeout);
 }
 
-Core::Core(Stream *streamPtr, unsigned int streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
+Core::Core(Stream *streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
     this->streamPointer = streamPtr;
     this->afterConstructor(streamType, baudrate, waitForByteTimeout);
 }
@@ -14,7 +14,7 @@ Core::~Core() {
 
 }
 
-void Core::afterConstructor(unsigned int streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
+void Core::afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
     this->streamType = streamType;
     this->baudrate = baudrate;
     this->waitForByteTimeout = waitForByteTimeout;

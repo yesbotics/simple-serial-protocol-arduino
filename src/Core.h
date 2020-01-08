@@ -12,10 +12,10 @@
 #define SOFTWARESERIAL_SUPPORTED true
 #endif
 
-const unsigned int STREAM_TYPE_HARDWARESERIAL = 1;
+const uint8_t STREAM_TYPE_HARDWARESERIAL = 1;
 
 #ifdef SOFTWARESERIAL_SUPPORTED
-const unsigned int STREAM_TYPE_SOFTWARESERIAL = 2;
+const uint8_t STREAM_TYPE_SOFTWARESERIAL = 2;
 #endif
 
 const byte CHAR_NULL = 0x00; // 0 // End of String
@@ -93,19 +93,19 @@ public:
 
 protected:
 
-	Core(Stream& streamRef, unsigned int streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
-	Core(Stream *streamPtr, unsigned int streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+	Core(Stream& streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+	Core(Stream *streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
 	~Core();
 	Stream* streamPointer = 0;
 	virtual void onWaitForByteTimeout() = 0;
 
 private:
 
-	unsigned int streamType = 0;
+	uint8_t streamType = 0;
 	unsigned long baudrate;
 	unsigned long waitForByteTimeout;
 
-	void afterConstructor(unsigned int streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+	void afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
 
 	void waitForBytes(int numBytes);
 	void readSignedBytes(int8_t* buffer, size_t n);

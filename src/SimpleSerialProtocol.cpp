@@ -9,8 +9,8 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom,
-        unsigned int commandCallbackRangeTo) :
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
                 (Stream &) softwareSerialRef,
                 STREAM_TYPE_SOFTWARESERIAL,
@@ -25,8 +25,8 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom,
-        unsigned int commandCallbackRangeTo) :
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
                 (Stream *) softwareSerialPtr,
                 STREAM_TYPE_SOFTWARESERIAL,
@@ -44,8 +44,8 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom,
-        unsigned int commandCallbackRangeTo) :
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
                 (Stream &) hardwareSerialRef,
                 STREAM_TYPE_HARDWARESERIAL,
@@ -61,8 +61,8 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom,
-        unsigned int commandCallbackRangeTo) :
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
                 (Stream *) hardwareSerialPtr,
                 STREAM_TYPE_HARDWARESERIAL,
@@ -76,12 +76,12 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 
 SimpleSerialProtocol::SimpleSerialProtocol(
         Stream &streamRef,
-        unsigned int streamType,
+        uint8_t streamType,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom ,
-        unsigned int commandCallbackRangeTo) :
+        byte commandCallbackRangeFrom ,
+        byte commandCallbackRangeTo) :
         Core(
                 streamRef,
                 streamType,
@@ -99,12 +99,12 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 
 SimpleSerialProtocol::SimpleSerialProtocol(
         Stream *streamPtr,
-        unsigned int streamType,
+        uint8_t streamType,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom,
-        unsigned int commandCallbackRangeTo) :
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo) :
         Core(
                 streamPtr,
                 streamType,
@@ -124,19 +124,19 @@ SimpleSerialProtocol::~SimpleSerialProtocol() {
 
 void SimpleSerialProtocol::afterConstructor(
         ErrorCallbackPointer errorCallbackPointer,
-        unsigned int commandCallbackRangeFrom,
-        unsigned int commandCallbackRangeTo
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo
 ) {
     this->errorCallbackPointer = errorCallbackPointer;
 
     this->commandCallbackRangeFrom = commandCallbackRangeFrom;
     this->commandCallbackRangeTo = commandCallbackRangeTo;
 
-    unsigned int commandCallbackPointerBufferSize =
+    byte commandCallbackPointerBufferSize =
             abs(commandCallbackRangeTo - commandCallbackRangeFrom) + 1;
 
     this->commandCallbackPointers = new CallbackPointer[commandCallbackPointerBufferSize];
-    for (unsigned int i = 0; i < commandCallbackPointerBufferSize;i++) {
+    for (byte i = 0; i < commandCallbackPointerBufferSize;i++) {
         this->commandCallbackPointers[i] = 0;
     }
 }
@@ -263,7 +263,7 @@ void SimpleSerialProtocol::onGotCommandByte(byte command) {
 
 void SimpleSerialProtocol::registerCommandCallback(const byte command,
                                                            CallbackPointer callbackPointer) {
-    unsigned int commandIndex = this->getCommandIndex(command);
+    uint8_t commandIndex = this->getCommandIndex(command);
     this->commandCallbackPointers[commandIndex] = callbackPointer;
 }
 
@@ -281,21 +281,21 @@ bool SimpleSerialProtocol::isCommandInReservedRange(byte command) {
 }
 
 bool SimpleSerialProtocol::isCommandRegistered(byte command) {
-    unsigned int commandIndex = this->getCommandIndex(command);
+    uint8_t commandIndex = this->getCommandIndex(command);
     return this->commandCallbackPointers[commandIndex] != 0;
 }
 
-unsigned int SimpleSerialProtocol::getCommandIndex(byte command) {
-    return (unsigned int) command - this->commandCallbackRangeFrom;
+uint8_t SimpleSerialProtocol::getCommandIndex(byte command) {
+    return (uint8_t) command - this->commandCallbackRangeFrom;
 }
 
 void SimpleSerialProtocol::callCommandCallback(byte command) {
-    unsigned int commandIndex = this->getCommandIndex(command);
+    uint8_t commandIndex = this->getCommandIndex(command);
     CallbackPointer commandCallbackPointer = this->commandCallbackPointers[commandIndex];
     commandCallbackPointer();
 }
 
-void SimpleSerialProtocol::error(unsigned int errorNum, bool dieInstantly) {
+void SimpleSerialProtocol::error(uint8_t errorNum, bool dieInstantly) {
     this->errorCallbackPointer(errorNum);
     if (dieInstantly) {
         this->die();

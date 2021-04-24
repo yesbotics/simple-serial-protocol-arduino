@@ -80,7 +80,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        byte commandCallbackRangeFrom ,
+        byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo) :
         Core(
                 streamRef,
@@ -202,6 +202,10 @@ void SimpleSerialProtocol::writeEot() {
     this->writeByte(CHAR_EOT);
 }
 
+void SimpleSerialProtocol::setDieInstantlyOnNotRegisteredCommand(bool die) {
+    this->dieInstantlyOnNotRegisteredCommand = die;
+}
+
 void SimpleSerialProtocol::registerCommand(const byte command, CallbackPointer callbackPointer) {
 //	Serial.println(F("SimpleSerialProtocol::registerCommand"));
 
@@ -253,7 +257,9 @@ void SimpleSerialProtocol::onGotCommandByte(byte command) {
     }
 
     if (!this->isCommandRegistered(command)) {
-        this->error(ERROR_COMMAND_IS_NOT_REGISTERED, true);
+        Serial.println("command");
+        Serial.println(command);
+        this->error(ERROR_COMMAND_IS_NOT_REGISTERED, dieInstantlyOnNotRegisteredCommand);
         this->flushCommand();
         return;
     }
@@ -262,8 +268,7 @@ void SimpleSerialProtocol::onGotCommandByte(byte command) {
 
 }
 
-void SimpleSerialProtocol::registerCommandCallback(const byte command,
-                                                           CallbackPointer callbackPointer) {
+void SimpleSerialProtocol::registerCommandCallback(const byte command, CallbackPointer callbackPointer) {
     uint8_t commandIndex = this->getCommandIndex(command);
     this->commandCallbackPointers[commandIndex] = callbackPointer;
 }

@@ -100,6 +100,8 @@ public:
 
     void init();
 
+    void setDieInstantlyOnNotRegisteredCommand(bool die);
+
     void registerCommand(byte command, CallbackPointer commandCallbackPointer);
 
     //overrideable
@@ -144,6 +146,7 @@ private:
 
     ErrorCallbackPointer errorCallbackPointer = 0;
     CallbackPointer *commandCallbackPointers = 0;
+    bool dieInstantlyOnNotRegisteredCommand = true;
 
     bool isWaitingForReadEot = false;
 
@@ -154,7 +157,6 @@ private:
     );
 
     void die();
-
 };
 
 #endif

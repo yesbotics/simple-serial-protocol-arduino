@@ -132,11 +132,12 @@ void SimpleSerialProtocol::afterConstructor(
     this->commandCallbackRangeFrom = commandCallbackRangeFrom;
     this->commandCallbackRangeTo = commandCallbackRangeTo;
 
-    byte commandCallbackPointerBufferSize =
-            abs(commandCallbackRangeTo - commandCallbackRangeFrom) + 1;
+    byte commandCallbackPointerBufferMaxIndex = abs(commandCallbackRangeTo - commandCallbackRangeFrom);
+    uint16_t commandCallbackPointerBufferSize = uint16_t(commandCallbackPointerBufferMaxIndex) + 1;
 
     this->commandCallbackPointers = new CallbackPointer[commandCallbackPointerBufferSize];
-    for (byte i = 0; i < commandCallbackPointerBufferSize;i++) {
+
+    for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++) {
         this->commandCallbackPointers[i] = 0;
     }
 }

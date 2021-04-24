@@ -257,8 +257,6 @@ void SimpleSerialProtocol::onGotCommandByte(byte command) {
     }
 
     if (!this->isCommandRegistered(command)) {
-        Serial.println("command");
-        Serial.println(command);
         this->error(ERROR_COMMAND_IS_NOT_REGISTERED, dieInstantlyOnNotRegisteredCommand);
         this->flushCommand();
         return;

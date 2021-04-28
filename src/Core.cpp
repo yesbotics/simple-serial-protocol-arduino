@@ -20,9 +20,14 @@ void Core::afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned
     this->waitForByteTimeout = waitForByteTimeout;
 }
 
-void Core::init() {
+void Core::init(int8_t rxPin, int8_t txPin) {
+
     if (this->streamType == STREAM_TYPE_HARDWARESERIAL) {
+#ifdef ESP32
+        ((HardwareSerial *) this->streamPointer)->begin(this->baudrate, SERIAL_8N1, rxPin, txPin);
+#else
         ((HardwareSerial *) this->streamPointer)->begin(this->baudrate);
+#endif
         return;
     }
 

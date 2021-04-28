@@ -26,40 +26,40 @@ const uint8_t MAX_CHARARRAY_LENGTH = UINT8_MAX; // 255
 #endif
 
 typedef union {
-	float floatingPoint;
-	uint8_t binary[4];
+    float floatingPoint;
+    uint8_t binary[4];
 } BinaryFloat;
 
 class Core {
 
 public:
-	virtual void init();
+    virtual void init(int8_t rxPin=-1, int8_t txPin=-1);
 
     // single byte value
-	byte readByte();
-	void writeByte(const byte bite);
+    byte readByte();
+    void writeByte(const byte bite);
 
     // single bool value
-	bool readBool();
-	void writeBool(const bool b);
+    bool readBool();
+    void writeBool(const bool b);
 
     // single character
-	char readChar();
-	void writeChar(const char ch);
+    char readChar();
+    void writeChar(const char ch);
 
-	// text / string - char[]
-	virtual bool readCString(char *output, uint8_t maxLength);
-	void writeCString(const char *charArray);
+    // text / string - char[]
+    virtual bool readCString(char *output, uint8_t maxLength);
+    void writeCString(const char *charArray);
 
     // text / string - String
     String readString(uint8_t maxLength = MAX_CHARARRAY_LENGTH);
-	void writeString(const String &string);
+    void writeString(const String &string);
 
-	// -128 to 127
+    // -128 to 127
     int8_t readInt8();
     void writeInt8(const int8_t num);
 
-	// 0 to 255
+    // 0 to 255
     uint8_t readUnsignedInt8();
     void writeUnsignedInt8(const uint8_t num);
 
@@ -88,27 +88,27 @@ public:
     void writeUnsignedInt64(const uint64_t num);
 
     // -3.402,823,4 * 10^38 to 3.402,823,4 * 10^38
-	float readFloat();
-	void writeFloat(const float f);
+    float readFloat();
+    void writeFloat(const float f);
 
 protected:
 
-	Core(Stream& streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
-	Core(Stream *streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
-	~Core();
-	Stream* streamPointer = 0;
-	virtual void onWaitForByteTimeout() = 0;
+    Core(Stream& streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+    Core(Stream *streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+    ~Core();
+    Stream* streamPointer = 0;
+    virtual void onWaitForByteTimeout() = 0;
 
 private:
 
-	uint8_t streamType = 0;
-	unsigned long baudrate;
-	unsigned long waitForByteTimeout;
+    uint8_t streamType = 0;
+    unsigned long baudrate;
+    unsigned long waitForByteTimeout;
 
-	void afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+    void afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
 
-	void waitForBytes(int numBytes);
-	void readSignedBytes(int8_t* buffer, size_t n);
+    void waitForBytes(int numBytes);
+    void readSignedBytes(int8_t* buffer, size_t n);
 
 };
 

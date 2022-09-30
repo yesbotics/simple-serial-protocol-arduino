@@ -105,8 +105,6 @@ private:
     unsigned long baudrate;
     unsigned long waitForByteTimeout;
 
-    void afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
-
     void waitForBytes(int numBytes);
     void readSignedBytes(int8_t* buffer, size_t n);
 

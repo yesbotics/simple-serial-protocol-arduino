@@ -1,6 +1,10 @@
 #include <Arduino.h>
+#include <SimpleSerialProtocol.h>
+
+SimpleSerialProtocol ssp(Serial, 115200, 500, nullptr);
+
 void setup() {
-// write your initialization code here
+    ssp.init();
 }
 
 void loop() {

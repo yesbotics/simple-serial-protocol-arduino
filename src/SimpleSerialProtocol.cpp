@@ -142,9 +142,9 @@ void SimpleSerialProtocol::afterConstructor(
     }
 }
 
-void SimpleSerialProtocol::init(int8_t rxPin, int8_t txPin) {
-    Core::init(rxPin, txPin);
-//	Serial.println(F("SimpleSerialProtocol::init"));
+void SimpleSerialProtocol::init() {
+    Core::init();
+//    Serial.println(F("SimpleSerialProtocol::init"));
     if (!this->isCommandRangeValid()) {
         this->error(ERROR_COMMAND_RANGE_IS_INVALID, true);
         return;

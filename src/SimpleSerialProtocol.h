@@ -98,7 +98,7 @@ public:
 
     ~SimpleSerialProtocol();
 
-    void init(int8_t rxPin = -1, int8_t txPin = -1) override;
+    void init() override;
 
     void setDieInstantlyOnNotRegisteredCommand(bool die);
 

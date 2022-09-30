@@ -33,19 +33,19 @@ typedef union {
 class Core {
 
 public:
-    virtual void init(int8_t rxPin=-1, int8_t txPin=-1);
+    virtual void init(int8_t rxPin = -1, int8_t txPin = -1);
 
     // single byte value
     byte readByte();
-    void writeByte(const byte bite);
+    void writeByte(byte bite);
 
     // single bool value
     bool readBool();
-    void writeBool(const bool b);
+    void writeBool(bool b);
 
     // single character
     char readChar();
-    void writeChar(const char ch);
+    void writeChar(char ch);
 
     // text / string - char[]
     virtual bool readCString(char* output, uint8_t maxLength);
@@ -57,39 +57,39 @@ public:
 
     // -128 to 127
     int8_t readInt8();
-    void writeInt8(const int8_t num);
+    void writeInt8(int8_t num);
 
     // 0 to 255
     uint8_t readUnsignedInt8();
-    void writeUnsignedInt8(const uint8_t num);
+    void writeUnsignedInt8(uint8_t num);
 
     // -32,768 to 32,767
     int16_t readInt16();
-    void writeInt16(const int16_t num);
+    void writeInt16(int16_t num);
 
     // 0 to 65,523
     uint16_t readUnsignedInt16();
-    void writeUnsignedInt16(const uint16_t num);
+    void writeUnsignedInt16(uint16_t num);
 
     // -2,147,483,648 to 2,147,483,647
     int32_t readInt32();
-    void writeInt32(const int32_t num);
+    void writeInt32(int32_t num);
 
     // 0 to 4,294,967,295
     uint32_t readUnsignedInt32();
-    void writeUnsignedInt32(const uint32_t num);
+    void writeUnsignedInt32(uint32_t num);
 
     // -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
     int64_t readInt64();
-    void writeInt64(const int64_t num);
+    void writeInt64(int64_t num);
 
     // 0 to 18,446,744,073,709,551,615
     uint64_t readUnsignedInt64();
-    void writeUnsignedInt64(const uint64_t num);
+    void writeUnsignedInt64(uint64_t num);
 
     // -3.402,823,4 * 10^38 to 3.402,823,4 * 10^38
     float readFloat();
-    void writeFloat(const float f);
+    void writeFloat(float f);
 
 protected:
 
@@ -107,8 +107,8 @@ private:
 
     void afterConstructor(uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
 
-    void waitForBytes(const int numBytes);
-    void readSignedBytes(int8_t* buffer, const size_t n);
+    void waitForBytes(int numBytes);
+    void readSignedBytes(int8_t* buffer, size_t n);
 
 };
 

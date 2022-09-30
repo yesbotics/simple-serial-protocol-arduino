@@ -42,7 +42,7 @@ byte Core::readByte() {
     return (byte) this->readInt8();
 }
 
-void Core::writeByte(const byte bite) {
+void Core::writeByte(byte bite) {
     this->writeInt8(bite);
 }
 
@@ -50,7 +50,7 @@ bool Core::readBool() {
     return (bool) (this->readInt8() != 0);
 }
 
-void Core::writeBool(const bool b) {
+void Core::writeBool(bool b) {
     this->writeInt8(b);
 }
 
@@ -58,7 +58,7 @@ char Core::readChar() {
     return (char) this->readInt8();
 }
 
-void Core::writeChar(const char ch) {
+void Core::writeChar(char ch) {
     this->writeInt8(ch);
 }
 
@@ -67,7 +67,7 @@ int8_t Core::readInt8() {
     return (int8_t) this->streamPointer->read();
 }
 
-void Core::writeInt8(const int8_t num) {
+void Core::writeInt8(int8_t num) {
     this->streamPointer->write(num);
 }
 
@@ -75,7 +75,7 @@ uint8_t Core::readUnsignedInt8() {
     return (uint8_t) this->readInt8();
 }
 
-void Core::writeUnsignedInt8(const uint8_t num) {
+void Core::writeUnsignedInt8(uint8_t num) {
     this->writeInt8(num);
 }
 
@@ -90,7 +90,7 @@ int16_t Core::readInt16() {
     );
 }
 
-void Core::writeInt16(const int16_t num) {
+void Core::writeInt16(int16_t num) {
     const uint8_t bufferSize = 2;
     int8_t buffer[bufferSize] = {
             (int8_t) (num & 0xff),
@@ -103,7 +103,7 @@ uint16_t Core::readUnsignedInt16() {
     return (uint16_t) this->readInt16();
 }
 
-void Core::writeUnsignedInt16(const uint16_t num) {
+void Core::writeUnsignedInt16(uint16_t num) {
     this->writeInt16(num);
 }
 
@@ -120,7 +120,7 @@ int32_t Core::readInt32() {
     );
 }
 
-void Core::writeInt32(const int32_t num) {
+void Core::writeInt32(int32_t num) {
     const uint8_t bufferSize = 4;
     int8_t buffer[bufferSize] = {
             (int8_t) (num & 0xff),
@@ -135,7 +135,7 @@ uint32_t Core::readUnsignedInt32() {
     return (uint32_t) this->readInt32();
 }
 
-void Core::writeUnsignedInt32(const uint32_t num) {
+void Core::writeUnsignedInt32(uint32_t num) {
     this->writeInt32(num);
 }
 
@@ -155,7 +155,7 @@ int64_t Core::readInt64() {
             (((int64_t) buffer[7]) << 56 & 0xff00000000000000);
 }
 
-void Core::writeInt64(const int64_t num) {
+void Core::writeInt64(int64_t num) {
     const uint8_t bufferSize = 8;
     int8_t buffer[bufferSize] = {
             (int8_t) (num & 0xff),
@@ -174,7 +174,7 @@ uint64_t Core::readUnsignedInt64() {
     return (uint64_t) this->readInt64();
 }
 
-void Core::writeUnsignedInt64(const uint64_t num) {
+void Core::writeUnsignedInt64(uint64_t num) {
     this->writeInt64(num);
 }
 
@@ -185,7 +185,7 @@ float Core::readFloat() {
     return binaryFloat.floatingPoint;
 }
 
-void Core::writeFloat(const float f) {
+void Core::writeFloat(float f) {
     BinaryFloat binaryFlaot;
     binaryFlaot.floatingPoint = f;
     this->streamPointer->write(binaryFlaot.binary, 4);
@@ -230,7 +230,7 @@ void Core::writeString(const String& string) {
 
 /***************************** PRIVATE *********************************/
 
-void Core::waitForBytes(const int numBytes) {
+void Core::waitForBytes(int numBytes) {
     unsigned long startTime = millis();
     unsigned long timeout = this->waitForByteTimeout * numBytes;
     while (this->streamPointer->available() < numBytes) {
@@ -243,7 +243,7 @@ void Core::waitForBytes(const int numBytes) {
 
 // OPTIMZATION NOTE : Serial.readBytes is SLOW
 // this one is much faster, but has no timeout
-void Core::readSignedBytes(int8_t* buffer, const size_t n) {
+void Core::readSignedBytes(int8_t* buffer, size_t n) {
     size_t i = 0;
     int c;
     while (i < n) {

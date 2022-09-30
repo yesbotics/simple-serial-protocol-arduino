@@ -96,7 +96,7 @@ protected:
     Core(Stream& streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
     Core(Stream* streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
     ~Core();
-    Stream* streamPointer = 0;
+    Stream* streamPointer = nullptr;
     virtual void onWaitForByteTimeout() = 0;
 
 private:

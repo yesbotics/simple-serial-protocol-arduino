@@ -144,8 +144,8 @@ protected:
 
 private:
 
-    ErrorCallbackPointer errorCallbackPointer = 0;
-    CallbackPointer* commandCallbackPointers = 0;
+    ErrorCallbackPointer errorCallbackPointer = nullptr;
+    CallbackPointer* commandCallbackPointers = nullptr;
     bool dieInstantlyOnNotRegisteredCommand = true;
 
     bool isWaitingForReadEot = false;

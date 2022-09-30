@@ -1,11 +1,11 @@
 #include <Core.h>
 
-Core::Core(Stream &streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
+Core::Core(Stream& streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
     this->streamPointer = &streamRef;
     this->afterConstructor(streamType, baudrate, waitForByteTimeout);
 }
 
-Core::Core(Stream *streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
+Core::Core(Stream* streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout) {
     this->streamPointer = streamPtr;
     this->afterConstructor(streamType, baudrate, waitForByteTimeout);
 }
@@ -24,17 +24,16 @@ void Core::init(int8_t rxPin, int8_t txPin) {
 
     if (this->streamType == STREAM_TYPE_HARDWARESERIAL) {
 #ifdef ESP32
-        ((HardwareSerial *) this->streamPointer)->begin(this->baudrate, SERIAL_8N1, rxPin, txPin);
+        ((HardwareSerial*) this->streamPointer)->begin(this->baudrate, SERIAL_8N1, rxPin, txPin);
 #else
-        ((HardwareSerial *) this->streamPointer)->begin(this->baudrate);
+        ((HardwareSerial*) this->streamPointer)->begin(this->baudrate);
 #endif
         return;
     }
 
 #ifdef SOFTWARESERIAL_SUPPORTED
     if (this->streamType == STREAM_TYPE_SOFTWARESERIAL) {
-        ((SoftwareSerial * )
-        this->streamPointer)->begin(this->baudrate);
+        ((SoftwareSerial*) this->streamPointer)->begin(this->baudrate);
     }
 #endif
 }
@@ -97,7 +96,7 @@ void Core::writeInt16(const int16_t num) {
             (int8_t) (num & 0xff),
             (int8_t) (num >> 8)
     };
-    this->streamPointer->write((uint8_t *) &buffer, bufferSize * sizeof(int8_t));
+    this->streamPointer->write((uint8_t*) &buffer, bufferSize * sizeof(int8_t));
 }
 
 uint16_t Core::readUnsignedInt16() {
@@ -129,7 +128,7 @@ void Core::writeInt32(const int32_t num) {
             (int8_t) (num >> 16 & 0xff),
             (int8_t) (num >> 24 & 0xff)
     };
-    this->streamPointer->write((uint8_t *) &buffer, bufferSize * sizeof(int8_t));
+    this->streamPointer->write((uint8_t*) &buffer, bufferSize * sizeof(int8_t));
 }
 
 uint32_t Core::readUnsignedInt32() {
@@ -168,7 +167,7 @@ void Core::writeInt64(const int64_t num) {
             (int8_t) (num >> 48 & 0xff),
             (int8_t) (num >> 56 & 0xff)
     };
-    this->streamPointer->write((uint8_t *) &buffer, bufferSize * sizeof(int8_t));
+    this->streamPointer->write((uint8_t*) &buffer, bufferSize * sizeof(int8_t));
 }
 
 uint64_t Core::readUnsignedInt64() {
@@ -182,7 +181,7 @@ void Core::writeUnsignedInt64(const uint64_t num) {
 float Core::readFloat() {
     BinaryFloat binaryFloat;
     this->waitForBytes(4);
-    this->readSignedBytes((int8_t *) binaryFloat.binary, 4);
+    this->readSignedBytes((int8_t*) binaryFloat.binary, 4);
     return binaryFloat.floatingPoint;
 }
 
@@ -192,7 +191,7 @@ void Core::writeFloat(const float f) {
     this->streamPointer->write(binaryFlaot.binary, 4);
 }
 
-bool Core::readCString(char *output, uint8_t maxLength) {
+bool Core::readCString(char* output, uint8_t maxLength) {
     bool stringComplete = false;
     output[0] = CHAR_NULL;
     uint8_t i = 0;
@@ -213,7 +212,7 @@ String Core::readString(uint8_t maxLength) {
     return String(charArrayValue);
 }
 
-void Core::writeCString(const char *charArray) {
+void Core::writeCString(const char* charArray) {
     uint8_t i = 0;
     const uint8_t max = MAX_CHARARRAY_LENGTH;
     char c = charArray[i];
@@ -225,7 +224,7 @@ void Core::writeCString(const char *charArray) {
     this->streamPointer->write(CHAR_NULL);
 }
 
-void Core::writeString(const String &string) {
+void Core::writeString(const String& string) {
     this->writeCString(string.c_str());
 }
 
@@ -244,7 +243,7 @@ void Core::waitForBytes(const int numBytes) {
 
 // OPTIMZATION NOTE : Serial.readBytes is SLOW
 // this one is much faster, but has no timeout
-void Core::readSignedBytes(int8_t *buffer, size_t n) {
+void Core::readSignedBytes(int8_t* buffer, size_t n) {
     size_t i = 0;
     int c;
     while (i < n) {

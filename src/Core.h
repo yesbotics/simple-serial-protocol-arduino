@@ -48,12 +48,12 @@ public:
     void writeChar(const char ch);
 
     // text / string - char[]
-    virtual bool readCString(char *output, uint8_t maxLength);
-    void writeCString(const char *charArray);
+    virtual bool readCString(char* output, uint8_t maxLength);
+    void writeCString(const char* charArray);
 
     // text / string - String
     String readString(uint8_t maxLength = MAX_CHARARRAY_LENGTH);
-    void writeString(const String &string);
+    void writeString(const String& string);
 
     // -128 to 127
     int8_t readInt8();
@@ -94,7 +94,7 @@ public:
 protected:
 
     Core(Stream& streamRef, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
-    Core(Stream *streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
+    Core(Stream* streamPtr, uint8_t streamType, unsigned long baudrate, unsigned long waitForByteTimeout);
     ~Core();
     Stream* streamPointer = 0;
     virtual void onWaitForByteTimeout() = 0;

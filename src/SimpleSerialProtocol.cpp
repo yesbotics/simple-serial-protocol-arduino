@@ -5,14 +5,14 @@
 #ifdef SOFTWARESERIAL_SUPPORTED
 
 SimpleSerialProtocol::SimpleSerialProtocol(
-        SoftwareSerial &softwareSerialRef,
+        SoftwareSerial& softwareSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
-                (Stream &) softwareSerialRef,
+                (Stream&) softwareSerialRef,
                 STREAM_TYPE_SOFTWARESERIAL,
                 baudrate, waitForByteTimeout,
                 errorCallbackPointer,
@@ -21,14 +21,14 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         ) {}
 
 SimpleSerialProtocol::SimpleSerialProtocol(
-        SoftwareSerial *softwareSerialPtr,
+        SoftwareSerial* softwareSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
-                (Stream *) softwareSerialPtr,
+                (Stream*) softwareSerialPtr,
                 STREAM_TYPE_SOFTWARESERIAL,
                 baudrate,
                 waitForByteTimeout,
@@ -40,14 +40,14 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 #endif
 
 SimpleSerialProtocol::SimpleSerialProtocol(
-        HardwareSerial &hardwareSerialRef,
+        HardwareSerial& hardwareSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
-                (Stream &) hardwareSerialRef,
+                (Stream&) hardwareSerialRef,
                 STREAM_TYPE_HARDWARESERIAL,
                 baudrate,
                 waitForByteTimeout,
@@ -57,14 +57,14 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         ) {}
 
 SimpleSerialProtocol::SimpleSerialProtocol(
-        HardwareSerial *hardwareSerialPtr,
+        HardwareSerial* hardwareSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo) :
         SimpleSerialProtocol(
-                (Stream *) hardwareSerialPtr,
+                (Stream*) hardwareSerialPtr,
                 STREAM_TYPE_HARDWARESERIAL,
                 baudrate,
                 waitForByteTimeout,
@@ -75,7 +75,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 
 
 SimpleSerialProtocol::SimpleSerialProtocol(
-        Stream &streamRef,
+        Stream& streamRef,
         uint8_t streamType,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
@@ -98,7 +98,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 
 
 SimpleSerialProtocol::SimpleSerialProtocol(
-        Stream *streamPtr,
+        Stream* streamPtr,
         uint8_t streamType,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
@@ -227,7 +227,7 @@ void SimpleSerialProtocol::registerCommand(const byte command, CallbackPointer c
     this->registerCommandCallback(command, callbackPointer);
 }
 
-bool SimpleSerialProtocol::readCString(char *output, uint8_t maxLength) {
+bool SimpleSerialProtocol::readCString(char* output, uint8_t maxLength) {
     bool successful = Core::readCString(output, maxLength);
     if (!successful) {
         this->error(ERROR_END_OF_STRING_BYTE_NOT_IN_CHAR_ARRAY, true);

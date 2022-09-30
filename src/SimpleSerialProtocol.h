@@ -41,7 +41,7 @@ public:
 #ifdef SOFTWARESERIAL_SUPPORTED
 
     SimpleSerialProtocol(
-            SoftwareSerial &softwareSerialRef,
+            SoftwareSerial& softwareSerialRef,
             unsigned long baudrate,
             unsigned long waitForByteTimeout,
             ErrorCallbackPointer errorCallbackPointer,
@@ -49,7 +49,7 @@ public:
             byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO);
 
     SimpleSerialProtocol(
-            SoftwareSerial *softwareSerialPtr,
+            SoftwareSerial* softwareSerialPtr,
             unsigned long baudrate,
             unsigned long waitForByteTimeout,
             ErrorCallbackPointer errorCallbackPointer,
@@ -59,7 +59,7 @@ public:
 #endif
 
     SimpleSerialProtocol(
-            HardwareSerial &hardwareSerialRef,
+            HardwareSerial& hardwareSerialRef,
             unsigned long baudrate,
             unsigned long waitForByteTimeout,
             ErrorCallbackPointer errorCallbackPointer,
@@ -68,7 +68,7 @@ public:
     );
 
     SimpleSerialProtocol(
-            HardwareSerial *hardwareSerialPtr,
+            HardwareSerial* hardwareSerialPtr,
             unsigned long baudrate,
             unsigned long waitForByteTimeout,
             ErrorCallbackPointer errorCallbackPointer,
@@ -77,7 +77,7 @@ public:
     );
 
     SimpleSerialProtocol(
-            Stream &streamRef,
+            Stream& streamRef,
             uint8_t streamType,
             unsigned long baudrate,
             unsigned long waitForByteTimeout,
@@ -87,7 +87,7 @@ public:
     );
 
     SimpleSerialProtocol(
-            Stream *streamPtr,
+            Stream* streamPtr,
             uint8_t streamType,
             unsigned long baudrate,
             unsigned long waitForByteTimeout,
@@ -145,7 +145,7 @@ protected:
 private:
 
     ErrorCallbackPointer errorCallbackPointer = 0;
-    CallbackPointer *commandCallbackPointers = 0;
+    CallbackPointer* commandCallbackPointers = 0;
     bool dieInstantlyOnNotRegisteredCommand = true;
 
     bool isWaitingForReadEot = false;

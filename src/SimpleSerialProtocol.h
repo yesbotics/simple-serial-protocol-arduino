@@ -33,9 +33,9 @@ const uint8_t ERROR_END_OF_STRING_BYTE_NOT_IN_CHAR_ARRAY = 6;
 class SimpleSerialProtocol : public Core {
 
 public:
-    typedef void (*CallbackPointer)();
+    typedef void (* CallbackPointer)();
 
-    typedef void (*ErrorCallbackPointer)(uint8_t errorNum);
+    typedef void (* ErrorCallbackPointer)(uint8_t errorNum);
 
 
 #ifdef SOFTWARESERIAL_SUPPORTED
@@ -115,7 +115,7 @@ public:
 
     void writeEot();
 
-    bool readCString(char *output, uint8_t maxLength) override;
+    bool readCString(char* output, uint8_t maxLength) override;
 
 protected:
 

@@ -33,7 +33,7 @@ void Core::init() {
 
 #ifdef SOFTWARESERIAL_SUPPORTED
     if (this->streamType == STREAM_TYPE_SOFTWARESERIAL) {
-        ((SoftwareSerial*) this->streamPointer)->begin(this->baudrate);
+        ((SoftwareSerial*) this->streamPointer)->begin((long) this->baudrate);
     }
 #endif
 }
@@ -43,7 +43,7 @@ byte Core::readByte() {
 }
 
 void Core::writeByte(byte bite) {
-    this->writeInt8(bite);
+    this->writeInt8((int8_t) bite);
 }
 
 bool Core::readBool() {
@@ -51,7 +51,7 @@ bool Core::readBool() {
 }
 
 void Core::writeBool(bool b) {
-    this->writeInt8(b);
+    this->writeInt8((int8_t) b);
 }
 
 char Core::readChar() {
@@ -76,7 +76,7 @@ uint8_t Core::readUnsignedInt8() {
 }
 
 void Core::writeUnsignedInt8(uint8_t num) {
-    this->writeInt8(num);
+    this->writeInt8((int8_t) num);
 }
 
 int16_t Core::readInt16() {
@@ -86,7 +86,7 @@ int16_t Core::readInt16() {
     this->readSignedBytes(buffer, bufferSize);
     return (
             (((int16_t) buffer[0]) & 0xff) |
-            (((int16_t) buffer[1]) << 8 & 0xff00)
+            (((int16_t) buffer[1]) << 8 & (int16_t) 0xff00)
     );
 }
 
@@ -104,7 +104,7 @@ uint16_t Core::readUnsignedInt16() {
 }
 
 void Core::writeUnsignedInt16(uint16_t num) {
-    this->writeInt16(num);
+    this->writeInt16((int16_t) num);
 }
 
 int32_t Core::readInt32() {
@@ -116,7 +116,7 @@ int32_t Core::readInt32() {
             (((int32_t) buffer[0]) & 0xff) |
             (((int32_t) buffer[1]) << 8 & 0xff00) |
             (((int32_t) buffer[2]) << 16 & 0xff0000) |
-            (((int32_t) buffer[3]) << 24 & 0xff000000)
+            (((int32_t) buffer[3]) << 24 & (int32_t) 0xff000000)
     );
 }
 
@@ -136,7 +136,7 @@ uint32_t Core::readUnsignedInt32() {
 }
 
 void Core::writeUnsignedInt32(uint32_t num) {
-    this->writeInt32(num);
+    this->writeInt32((int32_t) num);
 }
 
 int64_t Core::readInt64() {
@@ -144,7 +144,7 @@ int64_t Core::readInt64() {
     int8_t buffer[bufferSize];
     this->waitForBytes(bufferSize); // Wait for 8 bytes
     this->readSignedBytes(buffer, bufferSize);
-    return
+    return (
             (((int64_t) buffer[0]) & 0xff) |
             (((int64_t) buffer[1]) << 8 & 0xff00) |
             (((int64_t) buffer[2]) << 16 & 0xff0000) |
@@ -152,7 +152,8 @@ int64_t Core::readInt64() {
             (((int64_t) buffer[4]) << 32 & 0xff00000000) |
             (((int64_t) buffer[5]) << 40 & 0xff0000000000) |
             (((int64_t) buffer[6]) << 48 & 0xff000000000000) |
-            (((int64_t) buffer[7]) << 56 & 0xff00000000000000);
+            (((int64_t) buffer[7]) << 56 & (int64_t) 0xff00000000000000)
+    );
 }
 
 void Core::writeInt64(int64_t num) {
@@ -175,7 +176,7 @@ uint64_t Core::readUnsignedInt64() {
 }
 
 void Core::writeUnsignedInt64(uint64_t num) {
-    this->writeInt64(num);
+    this->writeInt64((int64_t) num);
 }
 
 float Core::readFloat() {
@@ -209,7 +210,7 @@ String Core::readString(uint8_t maxLength) {
     const uint8_t stringBufferSize = maxLength;
     char charArrayValue[stringBufferSize];
     this->readCString(charArrayValue, stringBufferSize);
-    return String(charArrayValue);
+    return {charArrayValue};
 }
 
 void Core::writeCString(const char* charArray) {

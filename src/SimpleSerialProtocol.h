@@ -98,7 +98,7 @@ public:
 
     ~SimpleSerialProtocol();
 
-    void init(int8_t rxPin = -1, int8_t txPin = -1);
+    void init(int8_t rxPin = -1, int8_t txPin = -1) override;
 
     void setDieInstantlyOnNotRegisteredCommand(bool die);
 
@@ -115,8 +115,7 @@ public:
 
     void writeEot();
 
-    // Override from Core
-    bool readCString(char *output, uint8_t maxLength);
+    bool readCString(char *output, uint8_t maxLength) override;
 
 protected:
 
@@ -130,7 +129,7 @@ protected:
     bool isCommandInReservedRange(byte command); //
     bool isCommandRegistered(byte command); //
 
-    void onWaitForByteTimeout();
+    void onWaitForByteTimeout() override;
 
     virtual void onGotCommandByte(byte command);
 

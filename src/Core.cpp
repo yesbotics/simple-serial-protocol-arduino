@@ -243,7 +243,7 @@ void Core::waitForBytes(const int numBytes) {
 
 // OPTIMZATION NOTE : Serial.readBytes is SLOW
 // this one is much faster, but has no timeout
-void Core::readSignedBytes(int8_t* buffer, size_t n) {
+void Core::readSignedBytes(int8_t* buffer, const size_t n) {
     size_t i = 0;
     int c;
     while (i < n) {

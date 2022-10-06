@@ -104,8 +104,7 @@ public:
 
     void registerCommand(byte command, CallbackPointer commandCallbackPointer);
 
-    //overrideable
-    virtual bool loop();
+    bool loop();
 
     byte readCommand();
 

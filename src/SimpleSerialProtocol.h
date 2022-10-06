@@ -125,20 +125,20 @@ protected:
     bool _isInitialized = false;
     bool _isDead = false;
 
-    bool isCommandRangeValid(); //
-    bool isCommandInReservedRange(byte command); //
-    bool isCommandRegistered(byte command); //
+    bool isCommandRangeValid();
+    bool isCommandInReservedRange(byte command);
+    bool isCommandRegistered(byte command);
 
     void onWaitForByteTimeout() override;
 
     virtual void onGotCommandByte(byte command);
 
-    void registerCommandCallback(byte command, CallbackPointer commandCallbackPointer); //
+    void registerCommandCallback(byte command, CallbackPointer commandCallbackPointer);
 
-    uint8_t getCommandIndex(byte command); //
+    uint8_t getCommandIndex(byte command);
     void callCommandCallback(byte command);
 
-    void error(uint8_t errorNum, bool dieInstantly); //
+    void error(uint8_t errorNum, bool dieInstantly);
     void flushCommand();
 
 private:

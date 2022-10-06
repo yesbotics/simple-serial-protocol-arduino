@@ -138,7 +138,7 @@ void SimpleSerialProtocol::afterConstructor(
     this->commandCallbackPointers = new CallbackPointer[commandCallbackPointerBufferSize];
 
     for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++) {
-        this->commandCallbackPointers[i] = 0;
+        this->commandCallbackPointers[i] = nullptr;
     }
 }
 
@@ -286,7 +286,7 @@ bool SimpleSerialProtocol::isCommandInReservedRange(byte command) {
 
 bool SimpleSerialProtocol::isCommandRegistered(byte command) {
     uint8_t commandIndex = this->getCommandIndex(command);
-    return this->commandCallbackPointers[commandIndex] != 0;
+    return this->commandCallbackPointers[commandIndex] != nullptr;
 }
 
 uint8_t SimpleSerialProtocol::getCommandIndex(byte command) {

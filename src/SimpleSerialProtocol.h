@@ -130,7 +130,7 @@ protected:
 
     void onWaitForByteTimeout() override;
 
-    virtual void onGotCommandByte(byte command);
+    void onGotCommandByte(byte command);
 
     void registerCommandCallback(byte command, CallbackPointer commandCallbackPointer);
 

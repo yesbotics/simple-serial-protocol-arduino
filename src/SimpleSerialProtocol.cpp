@@ -119,7 +119,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 }
 
 SimpleSerialProtocol::~SimpleSerialProtocol() {
-
+    delete[] this->commandCallbackPointers;
 }
 
 void SimpleSerialProtocol::afterConstructor(

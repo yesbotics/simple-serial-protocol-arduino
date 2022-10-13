@@ -97,6 +97,8 @@ public:
     );
 
     ~SimpleSerialProtocol();
+    SimpleSerialProtocol(const SimpleSerialProtocol&) = delete; // verbiete Copy-Ctor
+    SimpleSerialProtocol& operator=(const SimpleSerialProtocol&) = delete; // verbiete Copy-Asssignment
 
     void init() override;
 

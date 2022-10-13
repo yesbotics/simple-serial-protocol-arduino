@@ -10,9 +10,8 @@ Core::Core(Stream* streamPtr, uint8_t streamType, unsigned long baudrate, unsign
     this->streamPointer = streamPtr;
 }
 
-Core::~Core() {
-
-}
+// TODO: remove/delete stream popinter? possible?
+Core::~Core() {}
 
 void Core::init() {
 

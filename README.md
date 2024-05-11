@@ -158,8 +158,8 @@ Flagships like Arduino Uno or Arduino Nano are powered by the [ATmega328P]),
 which are restricted to 2,048kB of internal memory. 
 
 ## Links
-[Simple Serial Protocol]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-docs
-[Simple Serial Protocol for Node.js]:https://gitlab.com/yesbotics/simple-serial-protocol/simple-serial-protocol-node
+[Simple Serial Protocol]:https://github.com/yesbotics/simple-serial-protocol-docs
+[Simple Serial Protocol for Node.js]:https://github.com/yesbotics/simple-serial-protocol-node
 [Serial (HardwareSerial)]:https://www.arduino.cc/reference/en/language/functions/communication/serial/
 [SoftwareSerial Library]:https://www.arduino.cc/en/Reference/SoftwareSerial
 [Arduino's Stream implementation]:https://www.arduino.cc/reference/en/language/functions/communication/stream/

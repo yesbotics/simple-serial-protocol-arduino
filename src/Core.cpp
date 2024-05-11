@@ -62,6 +62,21 @@ void Core::writeByte(const byte bite) const
     this->writeInt8(static_cast<int8_t>(bite));
 }
 
+void Core::readBytes(byte* bites, const size_t size) {
+    for (unsigned int i = 0; i < size; i++) {
+        const byte bite = this->readByte();
+        bites[i] = bite;
+    }
+}
+
+void Core::writeBytes(const byte* bites, const size_t size) const
+{
+    for (unsigned int i = 0; i < size; i++) {
+        const byte bite = bites[i];
+        this->writeByte(bite);
+    }
+}
+
 bool Core::readBool()
 {
     return (bool)(this->readInt8() != 0);

@@ -43,6 +43,10 @@ public:
     byte readByte();
     void writeByte(byte bite) const;
 
+    // multi bytes value
+    void readBytes(byte* bites, size_t size);
+    void writeBytes(const byte* bites,size_t size) const;
+
     // single bool value
     bool readBool();
     void writeBool(bool b) const;

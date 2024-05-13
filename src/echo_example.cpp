@@ -1,3 +1,5 @@
+#ifdef ECHO_EXAMPLE
+
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
@@ -105,3 +107,4 @@ void onError(uint8_t errorNum) {
     digitalWrite(LED_BUILTIN, HIGH);
 }
 
+#endif // ECHO_EXAMPLE

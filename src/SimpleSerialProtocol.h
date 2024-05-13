@@ -33,9 +33,8 @@ constexpr uint8_t ERROR_END_OF_STRING_BYTE_NOT_IN_CHAR_ARRAY = 6;
 class SimpleSerialProtocol final : public Core
 {
 public:
-    typedef void (*CallbackPointer)();
-
-    typedef void (*ErrorCallbackPointer)(uint8_t errorNum);
+    using CallbackPointer = void (*)();
+    using ErrorCallbackPointer = void (*)(uint8_t errorNum);
 
 
 #ifdef SOFTWARESERIAL_SUPPORTED
@@ -44,7 +43,7 @@ public:
         SoftwareSerial& softwareSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer,
+        ErrorCallbackPointer errorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO);
 
@@ -52,7 +51,7 @@ public:
         SoftwareSerial* softwareSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer,
+        ErrorCallbackPointer errorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO);
 
@@ -60,21 +59,21 @@ public:
 
 #ifdef HARDWARESERIAL
     SimpleSerialProtocol(
-            HardwareSerial& hardwareSerialRef,
-            unsigned long baudrate,
-            unsigned long waitForByteTimeout,
-            ErrorCallbackPointer errorCallbackPointer,
-            byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
-            byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+        HardwareSerial& hardwareSerialRef,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
+        byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
 
     SimpleSerialProtocol(
-            HardwareSerial* hardwareSerialPtr,
-            unsigned long baudrate,
-            unsigned long waitForByteTimeout,
-            ErrorCallbackPointer errorCallbackPointer,
-            byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
-            byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+        HardwareSerial* hardwareSerialPtr,
+        unsigned long baudrate,
+        unsigned long waitForByteTimeout,
+        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
+        byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
 #endif
 
@@ -83,7 +82,7 @@ public:
         Serial_& usbapiSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer,
+        ErrorCallbackPointer errorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
@@ -92,7 +91,7 @@ public:
         Serial_* usbapiSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer,
+        ErrorCallbackPointer errorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
@@ -103,44 +102,31 @@ public:
     SimpleSerialProtocol& operator=(const SimpleSerialProtocol&) = delete; // verbiete Copy-Asssignment
 
     void init() override;
-
     void setDieInstantlyOnNotRegisteredCommand(bool die);
-
     void registerCommand(byte command, CallbackPointer commandCallbackPointer);
-
+    void unregisterCommand(byte command);
     bool loop();
-
     byte readCommand();
-
     byte readEot();
-
-    void writeCommand(byte command);
-
-    void writeEot();
-
+    void writeCommand(byte command) const;
+    void writeEot() const;
     bool readCString(char* output, uint8_t maxLength) override;
 
 protected:
     byte commandCallbackRangeFrom;
     byte commandCallbackRangeTo;
-
     bool _isInitialized = false;
     bool _isDead = false;
-
     bool isCommandRangeValid() const;
     bool isCommandInReservedRange(byte command) const;
-    bool isCommandRegistered(byte command);
-
+    bool isCommandRegistered(byte command) const;
     void onWaitForByteTimeout() override;
-
     void onGotCommandByte(byte command);
-
-    void registerCommandCallback(byte command, CallbackPointer commandCallbackPointer);
-
+    void registerCommandCallback(byte command, CallbackPointer commandCallbackPointer) const;
+    void unregisterCommandCallback(byte command) const;
     uint8_t getCommandIndex(byte command) const;
     void callCommandCallback(byte command) const;
-
-    void error(uint8_t errorNum, bool dieInstantly);
+    void error(uint8_t errorNum, bool dieImmediately);
     void flushCommand();
 
 private:
@@ -150,29 +136,23 @@ private:
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
-        byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo
     );
-
     SimpleSerialProtocol(
         Stream* streamPtr,
         bool isSoftwareSerial,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
         ErrorCallbackPointer errorCallbackPointer,
-        byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
-        byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+        byte commandCallbackRangeFrom,
+        byte commandCallbackRangeTo
     );
-
-
     ErrorCallbackPointer errorCallbackPointer = nullptr;
     CallbackPointer* commandCallbackPointers = nullptr;
-    bool dieInstantlyOnNotRegisteredCommand = true;
-
+    bool dieImmediatelyOnNotRegisteredCommand = true;
     bool isWaitingForReadEot = false;
-
     void afterConstructor();
-
     void die();
 };
 

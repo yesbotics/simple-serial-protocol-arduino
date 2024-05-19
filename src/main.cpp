@@ -1,3 +1,6 @@
+#ifdef MAIN
+
+
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
@@ -104,3 +107,6 @@ void onReceivedValues() {
 void onError(uint8_t errorNum) {
     digitalWrite(LED_BUILTIN, HIGH);
 }
+
+
+#endif // MAIN

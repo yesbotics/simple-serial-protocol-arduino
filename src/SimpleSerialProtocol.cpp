@@ -88,7 +88,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
     Serial_& usbapiSerialRef,
     const unsigned long baudrate,
     const unsigned long waitForByteTimeout,
-    const ErrorCallbackPointer _standaloneErrorCallbackPointer,
+    const ErrorCallbackPointer _errorCallbackPointer,
     const byte _commandCallbackRangeFrom,
     const byte _commandCallbackRangeTo) :
     SimpleSerialProtocol{
@@ -96,7 +96,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         false,
         baudrate,
         waitForByteTimeout,
-        _standaloneErrorCallbackPointer,
+        _errorCallbackPointer,
         _commandCallbackRangeFrom,
         _commandCallbackRangeTo
     }
@@ -107,7 +107,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
     Serial_* usbapiSerialPtr,
     const unsigned long baudrate,
     const unsigned long waitForByteTimeout,
-    const ErrorCallbackPointer _standaloneErrorCallbackPointer,
+    const ErrorCallbackPointer _errorCallbackPointer,
     const byte _commandCallbackRangeFrom,
     const byte _commandCallbackRangeTo) :
     SimpleSerialProtocol{
@@ -115,7 +115,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
         false,
         baudrate,
         waitForByteTimeout,
-        _standaloneErrorCallbackPointer,
+        _errorCallbackPointer,
         _commandCallbackRangeFrom,
         _commandCallbackRangeTo
     }
@@ -141,7 +141,7 @@ SimpleSerialProtocol::SimpleSerialProtocol(
     },
     _commandCallbackRangeFrom{commandCallbackRangeFrom},
     _commandCallbackRangeTo{commandCallbackRangeTo},
-    _standaloneErrorCallbackPointer{errorCallbackPointer}
+    _errorCallbackPointer{errorCallbackPointer}
 {
     _afterConstructor();
 }
@@ -163,24 +163,24 @@ SimpleSerialProtocol::SimpleSerialProtocol(
     },
     _commandCallbackRangeFrom{commandCallbackRangeFrom},
     _commandCallbackRangeTo{commandCallbackRangeTo},
-    _standaloneErrorCallbackPointer{errorCallbackPointer}
+    _errorCallbackPointer{errorCallbackPointer}
 {
     _afterConstructor();
 }
 
 SimpleSerialProtocol::~SimpleSerialProtocol()
 {
-    delete[] this->_standaloneCommandCallbackPointers;
+    delete[] this->_commandCallbackPointers;
 }
 
 void SimpleSerialProtocol::_afterConstructor()
 {
     const byte commandCallbackPointerBufferMaxIndex = abs(_commandCallbackRangeTo - _commandCallbackRangeFrom);
     const uint16_t commandCallbackPointerBufferSize = static_cast<uint16_t>(commandCallbackPointerBufferMaxIndex) + 1;
-    this->_standaloneCommandCallbackPointers = new CallbackPointer[commandCallbackPointerBufferSize];
+    this->_commandCallbackPointers = new CallbackPointer[commandCallbackPointerBufferSize];
     for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
     {
-        this->_standaloneCommandCallbackPointers[i] = nullptr;
+        this->_commandCallbackPointers[i] = nullptr;
     }
 }
 
@@ -256,12 +256,12 @@ void SimpleSerialProtocol::writeEot() const
     this->writeByte(CHAR_EOT);
 }
 
-void SimpleSerialProtocol::setDieInstantlyOnNotRegisteredCommand(const bool die)
+void SimpleSerialProtocol::setDieImmediatelyOnNotRegisteredCommand(const bool die)
 {
     this->_dieImmediatelyOnNotRegisteredCommand = die;
 }
 
-void SimpleSerialProtocol::registerCommand(const byte command, const CallbackPointer callbackPointer)
+void SimpleSerialProtocol::registerCommand(const byte command, const CallbackPointer commandCallbackPointer)
 {
     //	Serial.println(F("SimpleSerialProtocol::registerCommand"));
 
@@ -283,7 +283,7 @@ void SimpleSerialProtocol::registerCommand(const byte command, const CallbackPoi
         return;
     }
 
-    this->_registerCommandCallback(command, callbackPointer);
+    this->_registerCommandCallback(command, commandCallbackPointer);
 }
 
 void SimpleSerialProtocol::unregisterCommand(const byte command)
@@ -357,13 +357,13 @@ void SimpleSerialProtocol::_registerCommandCallback(
 ) const
 {
     const uint8_t commandIndex = this->_getCommandIndex(command);
-    this->_standaloneCommandCallbackPointers[commandIndex] = commandCallbackPointer;
+    this->_commandCallbackPointers[commandIndex] = commandCallbackPointer;
 }
 
 void SimpleSerialProtocol::_unregisterCommandCallback(const byte command) const
 {
     const uint8_t commandIndex = this->_getCommandIndex(command);
-    this->_standaloneCommandCallbackPointers[commandIndex] = nullptr;
+    this->_commandCallbackPointers[commandIndex] = nullptr;
 }
 
 bool SimpleSerialProtocol::_isCommandRangeValid() const
@@ -384,7 +384,7 @@ bool SimpleSerialProtocol::_isCommandInReservedRange(const byte command) const
 bool SimpleSerialProtocol::_isCommandRegistered(const byte command) const
 {
     const uint8_t commandIndex = this->_getCommandIndex(command);
-    return this->_standaloneCommandCallbackPointers[commandIndex] != nullptr;
+    return this->_commandCallbackPointers[commandIndex] != nullptr;
 }
 
 uint8_t SimpleSerialProtocol::_getCommandIndex(const byte command) const
@@ -395,13 +395,13 @@ uint8_t SimpleSerialProtocol::_getCommandIndex(const byte command) const
 void SimpleSerialProtocol::_callCommandCallback(const byte command) const
 {
     const uint8_t commandIndex = this->_getCommandIndex(command);
-    const CallbackPointer commandCallbackPointer = this->_standaloneCommandCallbackPointers[commandIndex];
+    const CallbackPointer commandCallbackPointer = this->_commandCallbackPointers[commandIndex];
     commandCallbackPointer();
 }
 
 void SimpleSerialProtocol::_error(const uint8_t errorNum, const bool dieImmediately)
 {
-    this->_standaloneErrorCallbackPointer(errorNum);
+    this->_errorCallbackPointer(errorNum);
     if (dieImmediately) this->_die();
 }
 
@@ -435,5 +435,5 @@ void SimpleSerialProtocol::_flushCommand()
 void SimpleSerialProtocol::_die()
 {
     this->_isDead = true;
-    this->_standaloneErrorCallbackPointer(ERROR_IS_DEAD);
+    this->_errorCallbackPointer(ERROR_IS_DEAD);
 }

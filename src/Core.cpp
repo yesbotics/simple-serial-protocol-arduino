@@ -298,7 +298,7 @@ void Core::waitForBytes(const int numBytes)
     {
         if (millis() - startTime >= timeout)
         {
-            this->onWaitForByteTimeout();
+            this->_onWaitForByteTimeout();
             return;
         }
     }

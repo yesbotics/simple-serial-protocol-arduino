@@ -104,7 +104,7 @@ protected:
     Core(Stream* streamPtr, bool isSoftwareSerial, unsigned long baudrate, unsigned long waitForByteTimeout);
     ~Core();
     Stream* streamPointer = nullptr;
-    virtual void onWaitForByteTimeout() = 0;
+    virtual void _onWaitForByteTimeout() = 0;
 
 private:
     bool isSoftwareSerial;

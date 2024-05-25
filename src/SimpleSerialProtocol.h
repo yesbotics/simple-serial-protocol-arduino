@@ -33,8 +33,12 @@ constexpr uint8_t ERROR_END_OF_STRING_BYTE_NOT_IN_CHAR_ARRAY = 6;
 class SimpleSerialProtocol final : public Core
 {
 public:
-    using CallbackPointer = void (*)();
-    using ErrorCallbackPointer = void (*)(uint8_t errorNum);
+    using StandaloneCallbackPointer = void (*)();
+    using StandaloneErrorCallbackPointer = void (*)(uint8_t errorNum);
+    template <typename T>
+    using MemberCallbackPointer = void (T::*)() const;
+    template <typename T>
+    using MemberErrorCallbackPointer = void (T::*)(uint8_t errorNum) const;
 
 
 #ifdef SOFTWARESERIAL_SUPPORTED
@@ -43,7 +47,7 @@ public:
         SoftwareSerial& softwareSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO);
 
@@ -51,9 +55,54 @@ public:
         SoftwareSerial* softwareSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO);
+
+
+    template <typename T>
+    SimpleSerialProtocol(
+        SoftwareSerial& softwareSerialRef,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo) :
+        SimpleSerialProtocol{
+            static_cast<Stream&>(softwareSerialRef),
+            true,
+            baudrate,
+            waitForByteTimeout,
+            instanceOfMemberErrorCallbackPointer,
+            memberErrorCallbackPointer,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo
+        }
+    {
+    }
+
+    template <typename T>
+    SimpleSerialProtocol(
+        SoftwareSerial* softwareSerialPtr,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo) :
+        SimpleSerialProtocol{
+            static_cast<Stream*>(softwareSerialPtr),
+            true,
+            baudrate,
+            waitForByteTimeout,
+            instanceOfMemberErrorCallbackPointer,
+            memberErrorCallbackPointer,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo
+        }
+    {
+    }
 
 #endif
 
@@ -63,7 +112,7 @@ public:
         HardwareSerial& hardwareSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
@@ -72,18 +121,65 @@ public:
         HardwareSerial* hardwareSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
+
+
+    template <typename T>
+    SimpleSerialProtocol(
+        HardwareSerial& hardwareSerialRef,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo) :
+        SimpleSerialProtocol{
+            static_cast<Stream&>(hardwareSerialRef),
+            false,
+            baudrate,
+            waitForByteTimeout,
+            instanceOfMemberErrorCallbackPointer,
+            memberErrorCallbackPointer,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo
+        }
+    {
+    }
+
+    template <typename T>
+    SimpleSerialProtocol(
+        HardwareSerial* hardwareSerialPtr,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo) :
+        SimpleSerialProtocol{
+            static_cast<Stream*>(hardwareSerialPtr),
+            false,
+            baudrate,
+            waitForByteTimeout,
+            instanceOfMemberErrorCallbackPointer,
+            memberErrorCallbackPointer,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo
+        }
+    {
+    }
+
 #endif
 
 #ifdef USBAPISERIAL
+
     SimpleSerialProtocol(
         Serial_& usbapiSerialRef,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
@@ -92,10 +188,55 @@ public:
         Serial_* usbapiSerialPtr,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer = nullptr,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer = nullptr,
         byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     );
+
+    template <typename T>
+    SimpleSerialProtocol(
+        Serial_& usbapiSerialRef,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo) :
+        SimpleSerialProtocol{
+            static_cast<Stream&>(usbapiSerialRef),
+            false,
+            baudrate,
+            waitForByteTimeout,
+            instanceOfMemberErrorCallbackPointer,
+            memberErrorCallbackPointer,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo
+        }
+    {
+    }
+
+    template <typename T>
+    SimpleSerialProtocol(
+        Serial_* usbapiSerialPtr,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo) :
+        SimpleSerialProtocol{
+            static_cast<Stream*>(usbapiSerialPtr),
+            false,
+            baudrate,
+            waitForByteTimeout,
+            instanceOfMemberErrorCallbackPointer,
+            memberErrorCallbackPointer,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo
+        }
+    {
+    }
+
 #endif
 
     virtual ~SimpleSerialProtocol();
@@ -104,7 +245,7 @@ public:
 
     void init() override;
     void setDieImmediatelyOnNotRegisteredCommand(bool die);
-    void registerCommand(byte command, CallbackPointer commandCallbackPointer);
+    void registerCommand(byte command, StandaloneCallbackPointer commandCallbackPointer);
     void unregisterCommand(byte command);
     bool loop();
     byte readCommand();
@@ -123,11 +264,12 @@ protected:
     bool _isCommandRegistered(byte command) const;
     void _onWaitForByteTimeout() override;
     void _onGotCommandByte(byte command);
-    void _registerCommandCallback(byte command, CallbackPointer commandCallbackPointer) const;
+    void _registerCommandCallback(byte command, StandaloneCallbackPointer commandCallbackPointer) const;
     void _unregisterCommandCallback(byte command) const;
     uint8_t _getCommandIndex(byte command) const;
     void _callCommandCallback(byte command) const;
     void _error(uint8_t errorNum, bool dieImmediately);
+    void _callErrorCallback(uint8_t errorNum) const;
     void _flushCommand();
 
 private:
@@ -136,7 +278,7 @@ private:
         bool isSoftwareSerial,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer,
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo
     );
@@ -145,13 +287,62 @@ private:
         bool isSoftwareSerial,
         unsigned long baudrate,
         unsigned long waitForByteTimeout,
-        ErrorCallbackPointer errorCallbackPointer,
+        StandaloneErrorCallbackPointer standaloneErrorCallbackPointer,
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo
     );
+    template <typename T>
+    SimpleSerialProtocol(
+        Stream& streamRef,
+        const bool isSoftwareSerial,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo):
+        Core{
+            streamRef,
+            isSoftwareSerial,
+            baudrate,
+            waitForByteTimeout
+        },
+        _commandCallbackRangeFrom{commandCallbackRangeFrom},
+        _commandCallbackRangeTo{commandCallbackRangeTo},
+        _instanceOfMemberErrorCallbackPointer{static_cast<void*>(instanceOfMemberErrorCallbackPointer)},
+        _memberErrorCallback{reinterpret_cast<void (SimpleSerialProtocol::*)()>(memberErrorCallbackPointer)}
+    {
+        _afterConstructor();
+    }
 
-    ErrorCallbackPointer _errorCallbackPointer = nullptr;
-    CallbackPointer* _commandCallbackPointers = nullptr;
+    template <typename T>
+    SimpleSerialProtocol(
+        Stream* streamPtr,
+        const bool isSoftwareSerial,
+        const unsigned long baudrate,
+        const unsigned long waitForByteTimeout,
+        T* instanceOfMemberErrorCallbackPointer,
+        MemberErrorCallbackPointer<T> memberErrorCallbackPointer,
+        const byte commandCallbackRangeFrom,
+        const byte commandCallbackRangeTo):
+        Core{
+            streamPtr,
+            isSoftwareSerial,
+            baudrate,
+            waitForByteTimeout
+        },
+        _commandCallbackRangeFrom{commandCallbackRangeFrom},
+        _commandCallbackRangeTo{commandCallbackRangeTo},
+        _instanceOfMemberErrorCallbackPointer{static_cast<void*>(instanceOfMemberErrorCallbackPointer)},
+        _memberErrorCallback{reinterpret_cast<void (SimpleSerialProtocol::*)()>(memberErrorCallbackPointer)}
+    {
+        _afterConstructor();
+    }
+
+    StandaloneErrorCallbackPointer _standaloneErrorCallbackPointer = nullptr;
+    StandaloneCallbackPointer* _standaloneCommandCallbackPointers = nullptr;
+    void* _instanceOfMemberErrorCallbackPointer = nullptr;
+    void (SimpleSerialProtocol::*_memberErrorCallback)() = nullptr;
 
     bool _dieImmediatelyOnNotRegisteredCommand = true;
     bool _isWaitingForReadEot = false;

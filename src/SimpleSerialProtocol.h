@@ -255,14 +255,23 @@ public:
     bool readCString(char* output, uint8_t maxLength) override;
 
 protected:
+    void _onWaitForByteTimeout() override;
+private:
     byte _commandCallbackRangeFrom;
     byte _commandCallbackRangeTo;
     bool _isInitialized = false;
     bool _isDead = false;
+    bool _dieImmediatelyOnNotRegisteredCommand = true;
+    bool _isWaitingForReadEot = false;
+
+    StandaloneErrorCallbackPointer _standaloneErrorCallbackPointer = nullptr;
+    StandaloneCallbackPointer* _standaloneCommandCallbackPointers = nullptr;
+    void* _instanceOfMemberErrorCallbackPointer = nullptr;
+    void (SimpleSerialProtocol::*_memberErrorCallback)() = nullptr;
+
     bool _isCommandRangeValid() const;
     bool _isCommandInReservedRange(byte command) const;
     bool _isCommandRegistered(byte command) const;
-    void _onWaitForByteTimeout() override;
     void _onGotCommandByte(byte command);
     void _registerCommandCallback(byte command, StandaloneCallbackPointer commandCallbackPointer) const;
     void _unregisterCommandCallback(byte command) const;
@@ -271,8 +280,9 @@ protected:
     void _error(uint8_t errorNum, bool dieImmediately);
     void _callErrorCallback(uint8_t errorNum) const;
     void _flushCommand();
+    void _afterConstructor();
+    void _die();
 
-private:
     SimpleSerialProtocol(
         Stream& streamRef,
         bool isSoftwareSerial,
@@ -339,15 +349,6 @@ private:
         _afterConstructor();
     }
 
-    StandaloneErrorCallbackPointer _standaloneErrorCallbackPointer = nullptr;
-    StandaloneCallbackPointer* _standaloneCommandCallbackPointers = nullptr;
-    void* _instanceOfMemberErrorCallbackPointer = nullptr;
-    void (SimpleSerialProtocol::*_memberErrorCallback)() = nullptr;
-
-    bool _dieImmediatelyOnNotRegisteredCommand = true;
-    bool _isWaitingForReadEot = false;
-    void _afterConstructor();
-    void _die();
 };
 
 #endif

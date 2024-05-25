@@ -34,11 +34,11 @@ class SimpleSerialProtocol final : public Core
 {
 public:
     using StandaloneCallbackPointer = void (*)();
-    using StandaloneErrorCallbackPointer = void (*)(uint8_t errorNum);
+    using StandaloneErrorCallbackPointer = void (*)(uint8_t);
+    template <typename T>
+    using MemberErrorCallbackPointer = void (T::*)(uint8_t) const;
     template <typename T>
     using MemberCallbackPointer = void (T::*)() const;
-    template <typename T>
-    using MemberErrorCallbackPointer = void (T::*)(uint8_t errorNum) const;
 
 
 #ifdef SOFTWARESERIAL_SUPPORTED
@@ -245,7 +245,7 @@ public:
 
     void init() override;
     void setDieImmediatelyOnNotRegisteredCommand(bool die);
-    void registerCommand(byte command, StandaloneCallbackPointer commandCallbackPointer);
+    void registerCommand(byte command, StandaloneCallbackPointer standaloneCommandCallbackPointer);
     void unregisterCommand(byte command);
     bool loop();
     byte readCommand();
@@ -254,9 +254,40 @@ public:
     void writeEot() const;
     bool readCString(char* output, uint8_t maxLength) override;
 
+
+    template <typename T>
+    void registerCommand(
+        const byte command,
+        const T* instanceOfMemberCallackPointer,
+        const MemberCallbackPointer<T> memberCommandCallbackPointer
+    )
+    {
+        if (!this->_registerCommandPrecheck(command)) return;
+        const uint8_t commandIndex = this->_getCommandIndex(command);
+        this->_instancesOfMemberCallbackPointers[commandIndex]
+            = static_cast<VoidPointer>(const_cast<T*>(instanceOfMemberCallackPointer));
+        this->_memberCommandCallbackPointers[commandIndex]
+            = reinterpret_cast<SspMemberCallbackPointer>(memberCommandCallbackPointer);
+    }
+
+    template <typename T>
+    void unregisterCommand(const byte command)
+    {
+        if (!this->_unregisterCommandPrecheck(command)) return;
+        const uint8_t commandIndex = this->_getCommandIndex(command);
+        this->_instancesOfMemberCallbackPointers[commandIndex] = nullptr;
+        this->_memberCommandCallbackPointers[commandIndex] = nullptr;
+    }
+
 protected:
     void _onWaitForByteTimeout() override;
+
 private:
+    using SspMemberErrorCallbackPointer = void (SimpleSerialProtocol::*)(uint8_t) const;
+    using SspMemberCallbackPointer = void (SimpleSerialProtocol::*)() const;
+    using SspPointer = SimpleSerialProtocol*;
+    using VoidPointer = void*;
+
     byte _commandCallbackRangeFrom;
     byte _commandCallbackRangeTo;
     bool _isInitialized = false;
@@ -265,16 +296,20 @@ private:
     bool _isWaitingForReadEot = false;
 
     StandaloneErrorCallbackPointer _standaloneErrorCallbackPointer = nullptr;
+    VoidPointer _instanceOfMemberErrorCallbackPointer = nullptr;
+    SspMemberCallbackPointer _memberErrorCallbackPointer = nullptr;
+
     StandaloneCallbackPointer* _standaloneCommandCallbackPointers = nullptr;
-    void* _instanceOfMemberErrorCallbackPointer = nullptr;
-    void (SimpleSerialProtocol::*_memberErrorCallback)() = nullptr;
+    VoidPointer* _instancesOfMemberCallbackPointers = nullptr;
+    SspMemberCallbackPointer* _memberCommandCallbackPointers = nullptr;
+
+    bool _registerCommandPrecheck(byte command);
+    bool _unregisterCommandPrecheck(byte command);
 
     bool _isCommandRangeValid() const;
     bool _isCommandInReservedRange(byte command) const;
     bool _isCommandRegistered(byte command) const;
     void _onGotCommandByte(byte command);
-    void _registerCommandCallback(byte command, StandaloneCallbackPointer commandCallbackPointer) const;
-    void _unregisterCommandCallback(byte command) const;
     uint8_t _getCommandIndex(byte command) const;
     void _callCommandCallback(byte command) const;
     void _error(uint8_t errorNum, bool dieImmediately);
@@ -301,6 +336,7 @@ private:
         byte commandCallbackRangeFrom,
         byte commandCallbackRangeTo
     );
+
     template <typename T>
     SimpleSerialProtocol(
         Stream& streamRef,
@@ -319,8 +355,8 @@ private:
         },
         _commandCallbackRangeFrom{commandCallbackRangeFrom},
         _commandCallbackRangeTo{commandCallbackRangeTo},
-        _instanceOfMemberErrorCallbackPointer{static_cast<void*>(instanceOfMemberErrorCallbackPointer)},
-        _memberErrorCallback{reinterpret_cast<void (SimpleSerialProtocol::*)()>(memberErrorCallbackPointer)}
+        _instanceOfMemberErrorCallbackPointer{static_cast<VoidPointer>(instanceOfMemberErrorCallbackPointer)},
+        _memberErrorCallbackPointer{reinterpret_cast<SspMemberCallbackPointer>(memberErrorCallbackPointer)}
     {
         _afterConstructor();
     }
@@ -343,12 +379,11 @@ private:
         },
         _commandCallbackRangeFrom{commandCallbackRangeFrom},
         _commandCallbackRangeTo{commandCallbackRangeTo},
-        _instanceOfMemberErrorCallbackPointer{static_cast<void*>(instanceOfMemberErrorCallbackPointer)},
-        _memberErrorCallback{reinterpret_cast<void (SimpleSerialProtocol::*)()>(memberErrorCallbackPointer)}
+        _instanceOfMemberErrorCallbackPointer{static_cast<VoidPointer>(instanceOfMemberErrorCallbackPointer)},
+        _memberErrorCallbackPointer{reinterpret_cast<SspMemberCallbackPointer>(memberErrorCallbackPointer)}
     {
         _afterConstructor();
     }
-
 };
 
 #endif

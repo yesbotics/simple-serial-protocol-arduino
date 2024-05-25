@@ -177,6 +177,8 @@ SimpleSerialProtocol::SimpleSerialProtocol(
 SimpleSerialProtocol::~SimpleSerialProtocol()
 {
     delete[] this->_standaloneCommandCallbackPointers;
+    delete[] this->_instancesOfMemberCallbackPointers;
+    delete[] this->_memberCommandCallbackPointers;
 }
 
 void SimpleSerialProtocol::_afterConstructor()
@@ -187,6 +189,16 @@ void SimpleSerialProtocol::_afterConstructor()
     for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
     {
         this->_standaloneCommandCallbackPointers[i] = nullptr;
+    }
+    this->_instancesOfMemberCallbackPointers = new VoidPointer[commandCallbackPointerBufferSize];
+    for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
+    {
+        this->_instancesOfMemberCallbackPointers[i] = nullptr;
+    }
+    this->_memberCommandCallbackPointers = new SspMemberCallbackPointer[commandCallbackPointerBufferSize];
+    for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
+    {
+        this->_memberCommandCallbackPointers[i] = nullptr;
     }
 }
 
@@ -267,52 +279,21 @@ void SimpleSerialProtocol::setDieImmediatelyOnNotRegisteredCommand(const bool di
     this->_dieImmediatelyOnNotRegisteredCommand = die;
 }
 
-void SimpleSerialProtocol::registerCommand(const byte command, const StandaloneCallbackPointer commandCallbackPointer)
+void SimpleSerialProtocol::registerCommand(
+    const byte command,
+    const StandaloneCallbackPointer standaloneCommandCallbackPointer
+)
 {
-    //	Serial.println(F("SimpleSerialProtocol::registerCommand"));
-
-    if (!this->_isInitialized)
-    {
-        this->_error(ERROR_IS_NOT_INITIALIZED, true);
-        return;
-    }
-
-    if (!this->_isCommandInReservedRange(command))
-    {
-        this->_error(ERROR_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
-        return;
-    }
-
-    if (this->_isCommandRegistered(command))
-    {
-        this->_error(ERROR_COMMAND_IS_REGISTERED, true);
-        return;
-    }
-
-    this->_registerCommandCallback(command, commandCallbackPointer);
+    if (!this->_registerCommandPrecheck(command)) return;
+    const uint8_t commandIndex = this->_getCommandIndex(command);
+    this->_standaloneCommandCallbackPointers[commandIndex] = standaloneCommandCallbackPointer;
 }
 
 void SimpleSerialProtocol::unregisterCommand(const byte command)
 {
-    if (!this->_isInitialized)
-    {
-        this->_error(ERROR_IS_NOT_INITIALIZED, true);
-        return;
-    }
-
-    if (!this->_isCommandInReservedRange(command))
-    {
-        this->_error(ERROR_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
-        return;
-    }
-
-    if (!this->_isCommandRegistered(command))
-    {
-        this->_error(ERROR_COMMAND_IS_NOT_REGISTERED, true);
-        return;
-    }
-
-    this->_unregisterCommandCallback(command);
+    if (!this->_unregisterCommandPrecheck(command)) return;
+    const uint8_t commandIndex = this->_getCommandIndex(command);
+    this->_standaloneCommandCallbackPointers[commandIndex] = nullptr;
 }
 
 bool SimpleSerialProtocol::readCString(char* output, const uint8_t maxLength)
@@ -357,19 +338,49 @@ void SimpleSerialProtocol::_onGotCommandByte(const byte command)
     this->_callCommandCallback(command);
 }
 
-void SimpleSerialProtocol::_registerCommandCallback(
-    const byte command,
-    const StandaloneCallbackPointer commandCallbackPointer
-) const
+bool SimpleSerialProtocol::_registerCommandPrecheck(const byte command)
 {
-    const uint8_t commandIndex = this->_getCommandIndex(command);
-    this->_standaloneCommandCallbackPointers[commandIndex] = commandCallbackPointer;
+    if (!this->_isInitialized)
+    {
+        this->_error(ERROR_IS_NOT_INITIALIZED, true);
+        return false;
+    }
+
+    if (!this->_isCommandInReservedRange(command))
+    {
+        this->_error(ERROR_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
+        return false;
+    }
+
+    if (this->_isCommandRegistered(command))
+    {
+        this->_error(ERROR_COMMAND_IS_REGISTERED, true);
+        return false;
+    }
+
+    return true;
 }
 
-void SimpleSerialProtocol::_unregisterCommandCallback(const byte command) const
+bool SimpleSerialProtocol::_unregisterCommandPrecheck(const byte command)
 {
-    const uint8_t commandIndex = this->_getCommandIndex(command);
-    this->_standaloneCommandCallbackPointers[commandIndex] = nullptr;
+    if (!this->_isInitialized)
+    {
+        this->_error(ERROR_IS_NOT_INITIALIZED, true);
+        return false;
+    }
+
+    if (!this->_isCommandInReservedRange(command))
+    {
+        this->_error(ERROR_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
+        return false;
+    }
+
+    if (!this->_isCommandRegistered(command))
+    {
+        this->_error(ERROR_COMMAND_IS_NOT_REGISTERED, true);
+        return false;
+    }
+    return true;
 }
 
 bool SimpleSerialProtocol::_isCommandRangeValid() const
@@ -390,7 +401,10 @@ bool SimpleSerialProtocol::_isCommandInReservedRange(const byte command) const
 bool SimpleSerialProtocol::_isCommandRegistered(const byte command) const
 {
     const uint8_t commandIndex = this->_getCommandIndex(command);
-    return this->_standaloneCommandCallbackPointers[commandIndex] != nullptr;
+    return this->_standaloneCommandCallbackPointers[commandIndex] != nullptr || (
+        this->_instancesOfMemberCallbackPointers[commandIndex] != nullptr
+        && this->_memberCommandCallbackPointers[commandIndex] != nullptr
+    );
 }
 
 uint8_t SimpleSerialProtocol::_getCommandIndex(const byte command) const
@@ -400,9 +414,27 @@ uint8_t SimpleSerialProtocol::_getCommandIndex(const byte command) const
 
 void SimpleSerialProtocol::_callCommandCallback(const byte command) const
 {
+
+    Serial.println("XXX1");
     const uint8_t commandIndex = this->_getCommandIndex(command);
-    const StandaloneCallbackPointer commandCallbackPointer = this->_standaloneCommandCallbackPointers[commandIndex];
-    commandCallbackPointer();
+
+    if (this->_standaloneCommandCallbackPointers[commandIndex] != nullptr)
+    {
+        const StandaloneCallbackPointer commandCallbackPointer = this->_standaloneCommandCallbackPointers[commandIndex];
+        commandCallbackPointer();
+    }
+    Serial.println("XXX2");
+    if (
+        this->_instancesOfMemberCallbackPointers[commandIndex] != nullptr
+        && this->_memberCommandCallbackPointers[commandIndex] != nullptr
+    )
+    {
+        Serial.println("XXX3");
+        const auto object = static_cast<SspPointer>(this->_instancesOfMemberCallbackPointers[commandIndex]);
+        const auto memberFunction = reinterpret_cast<SspMemberCallbackPointer>(this->_memberCommandCallbackPointers[commandIndex]);
+        (object->*memberFunction)();
+        Serial.println("XXX4");
+    }
 }
 
 void SimpleSerialProtocol::_error(const uint8_t errorNum, const bool dieImmediately)
@@ -450,11 +482,11 @@ void SimpleSerialProtocol::_callErrorCallback(const uint8_t errorNum) const
     {
         this->_standaloneErrorCallbackPointer(errorNum);
     }
-    if (this->_instanceOfMemberErrorCallbackPointer != nullptr && this->_memberErrorCallback != nullptr)
+    if (this->_instanceOfMemberErrorCallbackPointer != nullptr && this->_memberErrorCallbackPointer != nullptr)
     {
         // Cast the object back to its original type and call the member function
-        const auto object = static_cast<SimpleSerialProtocol*>(_instanceOfMemberErrorCallbackPointer);
-        const auto memberFunction = reinterpret_cast<void (SimpleSerialProtocol::*)(uint8_t)>(_memberErrorCallback);
+        const auto object = static_cast<SspPointer>(_instanceOfMemberErrorCallbackPointer);
+        const auto memberFunction = reinterpret_cast<SspMemberErrorCallbackPointer>(_memberErrorCallbackPointer);
         (object->*memberFunction)(errorNum);
     }
 }

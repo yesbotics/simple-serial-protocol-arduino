@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#include "Callback.h"
+#include "callback/Callback.h"
 #include "ssp_common.h"
 #include "Core.h"
 
@@ -83,7 +83,7 @@ private:
     bool _isCommandInReservedRange(byte command) const;
     bool _isCommandRegistered(byte command) const;
     void _onGotCommandByte(byte command);
-    uint8_t _getCommandIndex(byte command) const;
+    uint16_t _getCommandIndex(byte command) const;
     void _callCommandCallback(byte command) const;
     void _error(uint8_t errorNum, bool dieImmediately);
     void _callErrorCallback(uint8_t errorNum) const;

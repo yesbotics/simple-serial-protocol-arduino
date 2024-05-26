@@ -301,7 +301,7 @@ void Ssp3::_error(const uint8_t errorNum, const bool dieImmediately)
 
 void Ssp3::_callErrorCallback(uint8_t errorNum) const
 {
-    if (this->_cbErrPtr != nullptr) _cbErrPtr->execute(errorNum);
+    // if (this->_cbErrPtr != nullptr) _cbErrPtr->execute(errorNum);
 }
 
 void Ssp3::_flushCommand()

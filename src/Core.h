@@ -7,7 +7,7 @@
 #define CORE_H
 
 #include <Arduino.h>
-#include "common.h"
+#include "ssp_common.h"
 
 constexpr byte CHAR_NULL = 0x00; // 0 // End of String
 constexpr uint8_t MAX_CHARARRAY_LENGTH = UINT8_MAX; // 255

@@ -7,7 +7,7 @@
 #define SIMPLE_SERIAL_PROTOCOL_H
 
 #include "Core.h"
-#include "common.h"
+#include "ssp_common.h"
 
 class SimpleSerialProtocol final : public Core
 {

@@ -1,5 +1,5 @@
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef SSP_COMMON_H
+#define SSP_COMMON_H
 
 #include <Arduino.h>
 
@@ -39,4 +39,4 @@ constexpr uint8_t ERROR_COMMAND_IS_NOT_REGISTERED = 5;
 constexpr uint8_t ERROR_END_OF_STRING_BYTE_NOT_IN_CHAR_ARRAY = 6;
 
 
-#endif //COMMON_H
+#endif //SSP_COMMON_H

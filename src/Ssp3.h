@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #include "Callback.h"
-#include "common.h"
+#include "ssp_common.h"
 #include "Core.h"
 
 class Ssp3 final : public Core

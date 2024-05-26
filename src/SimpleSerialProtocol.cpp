@@ -183,18 +183,22 @@ SimpleSerialProtocol::~SimpleSerialProtocol()
 
 void SimpleSerialProtocol::_afterConstructor()
 {
+
     const byte commandCallbackPointerBufferMaxIndex = abs(_commandCallbackRangeTo - _commandCallbackRangeFrom);
     const uint16_t commandCallbackPointerBufferSize = static_cast<uint16_t>(commandCallbackPointerBufferMaxIndex) + 1;
+
     this->_standaloneCommandCallbackPointers = new StandaloneCallbackPointer[commandCallbackPointerBufferSize];
     for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
     {
         this->_standaloneCommandCallbackPointers[i] = nullptr;
     }
+
     this->_instancesOfMemberCallbackPointers = new VoidPointer[commandCallbackPointerBufferSize];
     for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
     {
         this->_instancesOfMemberCallbackPointers[i] = nullptr;
     }
+
     this->_memberCommandCallbackPointers = new SspMemberCallbackPointer[commandCallbackPointerBufferSize];
     for (uint16_t i = 0; i <= commandCallbackPointerBufferMaxIndex; i++)
     {
@@ -414,8 +418,6 @@ uint8_t SimpleSerialProtocol::_getCommandIndex(const byte command) const
 
 void SimpleSerialProtocol::_callCommandCallback(const byte command) const
 {
-
-    Serial.println("XXX1");
     const uint8_t commandIndex = this->_getCommandIndex(command);
 
     if (this->_standaloneCommandCallbackPointers[commandIndex] != nullptr)
@@ -423,17 +425,15 @@ void SimpleSerialProtocol::_callCommandCallback(const byte command) const
         const StandaloneCallbackPointer commandCallbackPointer = this->_standaloneCommandCallbackPointers[commandIndex];
         commandCallbackPointer();
     }
-    Serial.println("XXX2");
-    if (
+    else if (
         this->_instancesOfMemberCallbackPointers[commandIndex] != nullptr
         && this->_memberCommandCallbackPointers[commandIndex] != nullptr
     )
     {
-        Serial.println("XXX3");
         const auto object = static_cast<SspPointer>(this->_instancesOfMemberCallbackPointers[commandIndex]);
-        const auto memberFunction = reinterpret_cast<SspMemberCallbackPointer>(this->_memberCommandCallbackPointers[commandIndex]);
+        const auto memberFunction = reinterpret_cast<SspMemberCallbackPointer>(this->_memberCommandCallbackPointers[
+            commandIndex]);
         (object->*memberFunction)();
-        Serial.println("XXX4");
     }
 }
 
@@ -482,7 +482,7 @@ void SimpleSerialProtocol::_callErrorCallback(const uint8_t errorNum) const
     {
         this->_standaloneErrorCallbackPointer(errorNum);
     }
-    if (this->_instanceOfMemberErrorCallbackPointer != nullptr && this->_memberErrorCallbackPointer != nullptr)
+    else if (this->_instanceOfMemberErrorCallbackPointer != nullptr && this->_memberErrorCallbackPointer != nullptr)
     {
         // Cast the object back to its original type and call the member function
         const auto object = static_cast<SspPointer>(_instanceOfMemberErrorCallbackPointer);

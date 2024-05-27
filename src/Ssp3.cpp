@@ -1,81 +1,12 @@
 #include "Ssp3.h"
 
 /************************************************************************/
-/**************************** PUBLIC CTORS ******************************/
-/************************************************************************/
-
-#ifdef SOFTWARESERIAL_SUPPORTED
-Ssp3::Ssp3(
-    SoftwareSerial* softwareSerialPtr,
-    const uint32_t baudrate,
-    const uint32_t waitForByteTimeout,
-    Callback* cbErrPtr,
-    const byte commandCallbackRangeFrom,
-    const byte commandCallbackRangeTo
-):
-    Ssp3{
-        true,
-        softwareSerialPtr,
-        baudrate,
-        waitForByteTimeout,
-        commandCallbackRangeFrom,
-        commandCallbackRangeTo,
-        cbErrPtr
-    }
-{
-}
-# endif //SOFTWARESERIAL_SUPPORTED
-
-#ifdef HARDWARESERIAL
-Ssp3::Ssp3(
-    HardwareSerial* hardwareSerialPtr,
-    const uint32_t baudrate,
-    const uint32_t waitForByteTimeout,
-    Callback* cbErrPtr,
-    const byte commandCallbackRangeFrom,
-    const byte commandCallbackRangeTo
-):
-    Ssp3{
-        false,
-        hardwareSerialPtr,
-        baudrate,
-        waitForByteTimeout,
-        commandCallbackRangeFrom,
-        commandCallbackRangeTo,
-        cbErrPtr
-    }
-{
-}
-
-# endif //HARDWARESERIAL
-
-#ifdef USBAPISERIAL
-Ssp3::Ssp3(
-    Serial_* usbapiSerialPtr,
-    const uint32_t baudrate,
-    const uint32_t waitForByteTimeout,
-    Callback* cbErrPtr,
-    const byte commandCallbackRangeFrom,
-    const byte commandCallbackRangeTo
-):
-    Ssp3{
-        false,
-        usbapiSerialPtr,
-        baudrate,
-        waitForByteTimeout,
-        commandCallbackRangeFrom,
-        commandCallbackRangeTo,
-        cbErrPtr
-    }
-{
-}
-# endif //USBAPISERIAL
-
-/************************************************************************/
 /**************************** PUBLIC DTORS ******************************/
 /************************************************************************/
 
-Ssp3::~Ssp3()  {
+Ssp3::~Ssp3()
+{
+    delete this->_cbErrPtr;
     delete[] this->_cbPtrs;
 };
 
@@ -274,6 +205,7 @@ void Ssp3::_onGotCommandByte(const byte command)
         this->_error(ERROR_IS_NOT_INITIALIZED, true);
         return;
     }
+
     if (!this->_isCommandInReservedRange(command))
     {
         this->_error(ERROR_COMMAND_IS_NOT_IN_RESERVED_RANGE, true);
@@ -297,7 +229,7 @@ uint16_t Ssp3::_getCommandIndex(const byte command) const
 void Ssp3::_callCommandCallback(const byte command) const
 {
     const uint16_t commandIndex = this->_getCommandIndex(command);
-    Callback* cbPtr = this->_cbPtrs[commandIndex];
+    const Callback* cbPtr = this->_cbPtrs[commandIndex];
     if (cbPtr != nullptr) cbPtr->execute();
 }
 
@@ -307,9 +239,9 @@ void Ssp3::_error(const uint8_t errorNum, const bool dieImmediately)
     if (dieImmediately) this->_die();
 }
 
-void Ssp3::_callErrorCallback(uint8_t errorNum) const
+void Ssp3::_callErrorCallback(const uint8_t errorNum) const
 {
-    // if (this->_cbErrPtr != nullptr) _cbErrPtr->execute(errorNum);
+    if (this->_cbErrPtr != nullptr) _cbErrPtr->execute(errorNum);
 }
 
 void Ssp3::_flushCommand()

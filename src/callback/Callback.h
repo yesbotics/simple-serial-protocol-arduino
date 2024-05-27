@@ -43,7 +43,7 @@ public:
     {
     }
 
-    // Constructor for standalone function
+    // Constructor for standalone function with uint8_t arg
     explicit Callback(
         const FunctionTypeStandaloneWithUint8Arg func) :
         callback_(
@@ -52,7 +52,7 @@ public:
     {
     }
 
-    // Constructor for non-const member function
+    // Constructor for non-const member function with uint8_t arg
     template <typename T>
     Callback(
         T* instance,
@@ -64,7 +64,7 @@ public:
     {
     }
 
-    // Constructor for const member function
+    // Constructor for const member function with uint8_t arg
     template <typename T>
     Callback(
         const T* instance,
@@ -77,11 +77,12 @@ public:
     ~Callback()
     {
         delete callback_;
+        callback_ = nullptr;
     }
 
     void execute() const
     {
-        if (callback_)
+        if (callback_ != nullptr)
         {
             callback_->execute();
         }
@@ -89,14 +90,14 @@ public:
 
     void execute(const uint8_t num) const
     {
-        if (callback_)
+        if (callback_ != nullptr)
         {
             callback_->execute(num);
         }
     }
 
 private:
-    CallbackBase* callback_;
+    CallbackBase* callback_ = nullptr;
 };
 
 constexpr uint8_t CALLBACK_POINTER_SIZE = sizeof(Callback*);

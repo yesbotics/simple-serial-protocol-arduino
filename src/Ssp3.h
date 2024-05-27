@@ -308,6 +308,18 @@ public:
         this->registerCommand(command, new Callback{instance, func});
     }
 
+    template <typename T>
+    void registerCommand(const byte command, const T* instance, FunctionTypeMember<T> func)
+    {
+        this->registerCommand(command, new Callback{instance, func});
+    }
+
+    template <typename T>
+    void registerCommand(const byte command, const T* instance, FunctionTypeMemberWithUint8Arg<T> func)
+    {
+        this->registerCommand(command, new Callback{instance, func});
+    }
+
     void unregisterCommand(byte command);
     byte readCommand();
     void writeCommand(byte command) const;

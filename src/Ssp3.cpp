@@ -61,7 +61,7 @@ void Ssp3::registerCommand(const byte command, Callback* cbPtr)
         this->_error(ERROR_COMMAND_IS_REGISTERED, true);
         return;
     }
-    const uint16_t commandIndex = this->_getCommandIndex(command);
+    const uint8_t commandIndex = this->_getCommandIndex(command);
     this->_cbPtrs[commandIndex] = cbPtr;
 }
 
@@ -82,7 +82,7 @@ void Ssp3::unregisterCommand(const byte command)
         this->_error(ERROR_COMMAND_IS_NOT_REGISTERED, true);
         return;
     }
-    const uint16_t commandIndex = this->_getCommandIndex(command);
+    const uint8_t commandIndex = this->_getCommandIndex(command);
     this->_cbPtrs[commandIndex] = nullptr;
 }
 
@@ -164,10 +164,10 @@ Ssp3::Ssp3(
     _cbRangeTo{commandCallbackRangeTo},
     _cbErrPtr{cbErrPtr}
 {
-    const byte cbPtrsBufferMaxIndex = abs(_cbRangeTo - _cbRangeFrom) * CALLBACK_POINTER_SIZE;
-    const uint16_t cbPtrsBufferSize = static_cast<uint16_t>(cbPtrsBufferMaxIndex) + CALLBACK_POINTER_SIZE;
+    const uint8_t cbPtrsBufferMaxIndex = abs(_cbRangeTo - _cbRangeFrom);
+    const uint8_t cbPtrsBufferSize = cbPtrsBufferMaxIndex + 1;
     this->_cbPtrs = new Callback*[cbPtrsBufferSize];
-    for (uint16_t i = 0; i <= cbPtrsBufferMaxIndex; i += CALLBACK_POINTER_SIZE)
+    for (uint8_t i = 0; i <= cbPtrsBufferMaxIndex; i++)
     {
         this->_cbPtrs[i] = nullptr;
     }
@@ -194,7 +194,7 @@ bool Ssp3::_isCommandInReservedRange(const byte command) const
 
 bool Ssp3::_isCommandRegistered(const byte command) const
 {
-    const uint16_t commandIndex = this->_getCommandIndex(command);
+    const uint8_t commandIndex = this->_getCommandIndex(command);
     return this->_cbPtrs[commandIndex] != nullptr;
 }
 
@@ -221,14 +221,14 @@ void Ssp3::_onGotCommandByte(const byte command)
     this->_callCommandCallback(command);
 }
 
-uint16_t Ssp3::_getCommandIndex(const byte command) const
+uint8_t Ssp3::_getCommandIndex(const byte command) const
 {
-    return (static_cast<uint8_t>(command) - this->_cbRangeFrom) * CALLBACK_POINTER_SIZE;
+    return (static_cast<uint8_t>(command) - this->_cbRangeFrom);
 }
 
 void Ssp3::_callCommandCallback(const byte command) const
 {
-    const uint16_t commandIndex = this->_getCommandIndex(command);
+    const uint8_t commandIndex = this->_getCommandIndex(command);
     const Callback* cbPtr = this->_cbPtrs[commandIndex];
     if (cbPtr != nullptr) cbPtr->execute();
 }

@@ -13,63 +13,41 @@ class Callback
 {
 public:
     // Constructor for standalone function
-    explicit Callback(
-        const FunctionTypeStandalone func) :
-        callback_(
-            new StandaloneCallback(func)
-        )
+    explicit Callback(const FunctionTypeStandalone func) :
+        callback_(new StandaloneCallback(func))
+    {
+    }
+
+    // Constructor for standalone function with uint8_t arg
+    explicit Callback(const FunctionTypeStandaloneWithUint8Arg func) :
+        callback_(new StandaloneCallback(func))
     {
     }
 
     // Constructor for non-const member function
     template <typename T>
-    Callback(
-        T* instance,
-        FunctionTypeMember<T> func
-    ) :
-        callback_(
-            new MemberCallback<T>(instance, func)
-        )
-    {
-    }
-
-    // Constructor for const member function
-    template <typename T>
-    Callback(
-        const T* instance,
-        FunctionTypeConstMember<T> func
-    ) :
-        callback_(new ConstMemberCallback<T>(instance, func))
-    {
-    }
-
-    // Constructor for standalone function with uint8_t arg
-    explicit Callback(
-        const FunctionTypeStandaloneWithUint8Arg func) :
-        callback_(
-            new StandaloneCallback(func)
-        )
+    Callback(T* instance, FunctionTypeMember<T> func) :
+        callback_(new MemberCallback<T>(instance, func))
     {
     }
 
     // Constructor for non-const member function with uint8_t arg
     template <typename T>
-    Callback(
-        T* instance,
-        FunctionTypeMemberWithUint8Arg<T> func
-    ) :
-        callback_(
-            new MemberCallback<T>(instance, func)
-        )
+    Callback(T* instance, FunctionTypeMemberWithUint8Arg<T> func) :
+        callback_(new MemberCallback<T>(instance, func))
+    {
+    }
+
+    // Constructor for const member function
+    template <typename T>
+    Callback(const T* instance, FunctionTypeConstMember<T> func) :
+        callback_(new ConstMemberCallback<T>(instance, func))
     {
     }
 
     // Constructor for const member function with uint8_t arg
     template <typename T>
-    Callback(
-        const T* instance,
-        FunctionTypeConstMemberWithUint8Arg<T> func
-    ) :
+    Callback(const T* instance, FunctionTypeConstMemberWithUint8Arg<T> func) :
         callback_(new ConstMemberCallback<T>(instance, func))
     {
     }

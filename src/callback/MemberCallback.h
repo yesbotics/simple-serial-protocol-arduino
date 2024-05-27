@@ -31,7 +31,7 @@ public:
 
     void execute() override
     {
-        if (instance_ && func_)
+        if (instance_ != nullptr && func_ != nullptr)
         {
             (instance_->*func_)();
         }
@@ -39,7 +39,7 @@ public:
 
     void execute(uint8_t num) override
     {
-        if (instance_ && func2_)
+        if (instance_ != nullptr && func2_ != nullptr)
         {
             (instance_->*func2_)(num);
         }

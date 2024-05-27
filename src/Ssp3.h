@@ -44,7 +44,7 @@ public:
             softwareSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(cbErrPtr),
+            new Callback{cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -56,8 +56,8 @@ public:
         SoftwareSerial* softwareSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
-        const T* instance = nullptr,
-        const FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
+        T* instance = nullptr,
+        FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
         const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     ):
@@ -65,7 +65,7 @@ public:
             softwareSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(instance, cbErrPtr),
+            new Callback{instance, cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -86,7 +86,7 @@ public:
             softwareSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(instance, cbErrPtr),
+            new Callback{instance, cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -129,7 +129,7 @@ public:
             hardwareSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(cbErrPtr),
+            new Callback{cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -141,8 +141,8 @@ public:
         HardwareSerial* hardwareSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
-        const T* instance = nullptr,
-        const FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
+        T* instance = nullptr,
+        FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
         const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     ):
@@ -150,7 +150,7 @@ public:
             hardwareSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(instance, cbErrPtr),
+            new Callback{instance, cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -171,7 +171,7 @@ public:
             hardwareSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(instance, cbErrPtr),
+            new Callback{instance, cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -214,7 +214,7 @@ public:
             usbapiSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(cbErrPtr),
+            new Callback{cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -226,8 +226,8 @@ public:
         Serial_* usbapiSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
-        const T* instance = nullptr,
-        const FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
+        T* instance = nullptr,
+        FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
         const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
         const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     ):
@@ -235,7 +235,7 @@ public:
             usbapiSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(instance, cbErrPtr),
+            new Callback{instance, cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -256,7 +256,7 @@ public:
             usbapiSerialPtr,
             baudrate,
             waitForByteTimeout,
-            new Callback(instance, cbErrPtr),
+            new Callback{instance, cbErrPtr},
             commandCallbackRangeFrom,
             commandCallbackRangeTo,
         }
@@ -285,13 +285,13 @@ public:
     }
 
     template <typename T>
-    void registerCommand(const byte command, const T* instance, FunctionTypeMember<T> func)
+    void registerCommand(const byte command, T* instance, FunctionTypeMember<T> func)
     {
         this->registerCommand(command, new Callback{instance, func});
     }
 
     template <typename T>
-    void registerCommand(const byte command, const T* instance, FunctionTypeMemberWithUint8Arg<T> func)
+    void registerCommand(const byte command, T* instance, FunctionTypeMemberWithUint8Arg<T> func)
     {
         this->registerCommand(command, new Callback{instance, func});
     }
@@ -341,7 +341,7 @@ private:
     bool _isCommandInReservedRange(byte command) const;
     bool _isCommandRegistered(byte command) const;
     void _onGotCommandByte(byte command);
-    uint16_t _getCommandIndex(byte command) const;
+    uint8_t _getCommandIndex(byte command) const;
     void _callCommandCallback(byte command) const;
     void _error(uint8_t errorNum, bool dieImmediately);
     void _callErrorCallback(uint8_t errorNum) const;

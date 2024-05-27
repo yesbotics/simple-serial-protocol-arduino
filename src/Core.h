@@ -95,7 +95,7 @@ private:
     unsigned long baudrate;
     unsigned long waitForByteTimeout;
 
-    void waitForBytes(int numBytes);
+    bool waitForBytes(int numBytes);
     void readSignedBytes(int8_t* buffer, size_t n) const;
 };
 

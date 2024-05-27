@@ -43,7 +43,7 @@ void Core::init()
 #ifdef ESP32
             ((HardwareSerial*)this->streamPointer)->begin(this->baudrate, SERIAL_8N1, rxPin, txPin);
 #else
-             ((HardwareSerial*)this->streamPointer)->begin(this->baudrate);
+    ((HardwareSerial*)this->streamPointer)->begin(this->baudrate);
 #endif
 #endif
 
@@ -62,8 +62,10 @@ void Core::writeByte(const byte bite) const
     this->writeInt8(static_cast<int8_t>(bite));
 }
 
-void Core::readBytes(byte* bites, const size_t size) {
-    for (unsigned int i = 0; i < size; i++) {
+void Core::readBytes(byte* bites, const size_t size)
+{
+    for (unsigned int i = 0; i < size; i++)
+    {
         const byte bite = this->readByte();
         bites[i] = bite;
     }
@@ -71,7 +73,8 @@ void Core::readBytes(byte* bites, const size_t size) {
 
 void Core::writeBytes(const byte* bites, const size_t size) const
 {
-    for (unsigned int i = 0; i < size; i++) {
+    for (unsigned int i = 0; i < size; i++)
+    {
         const byte bite = bites[i];
         this->writeByte(bite);
     }
@@ -247,12 +250,13 @@ void Core::writeFloat(const float f) const
 
 bool Core::readCString(char* output, const uint8_t maxLength)
 {
+    // TODO: can run infinitly, since there is no break condition
     bool stringComplete = false;
     output[0] = CHAR_NULL;
     uint8_t i = 0;
     while (!stringComplete && i < maxLength)
     {
-        this->waitForBytes(1);
+        if (!this->waitForBytes(1))return false;
         const char currentChar = static_cast<char>(this->streamPointer->read());
         output[i] = currentChar;
         stringComplete = currentChar == CHAR_NULL;
@@ -265,8 +269,8 @@ String Core::readString(const uint8_t maxLength)
 {
     const uint8_t stringBufferSize = maxLength;
     char charArrayValue[stringBufferSize];
-    this->readCString(charArrayValue, stringBufferSize);
-    return {charArrayValue};
+    const bool successfull = this->readCString(charArrayValue, stringBufferSize);
+    return successfull ? String{charArrayValue} : String{};
 }
 
 void Core::writeCString(const char* charArray) const
@@ -290,7 +294,7 @@ void Core::writeString(const String& string) const
 
 /***************************** PRIVATE *********************************/
 
-void Core::waitForBytes(const int numBytes)
+bool Core::waitForBytes(const int numBytes)
 {
     const unsigned long startTime = millis();
     const unsigned long timeout = this->waitForByteTimeout * numBytes;
@@ -299,9 +303,10 @@ void Core::waitForBytes(const int numBytes)
         if (millis() - startTime >= timeout)
         {
             this->_onWaitForByteTimeout();
-            return;
+            return false;
         }
     }
+    return true;
 }
 
 // OPTIMZATION NOTE : Serial.readBytes is SLOW

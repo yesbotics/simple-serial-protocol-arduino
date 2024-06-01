@@ -35,18 +35,41 @@ void Core::init()
 #ifdef SOFTWARESERIAL_SUPPORTED
     if (isSoftwareSerial)
     {
-        ((SoftwareSerial*)this->streamPointer)->begin(static_cast<long>(this->baudrate));
+        // ReSharper disable once CppCStyleCast
+        const auto ssPtr = ((SoftwareSerial*)this->streamPointer);
+        ssPtr->begin(static_cast<long>(this->baudrate));
+        while(!(*ssPtr))
+        {
+            ; // Do nothing and just wait
+        }
         return;
     }
 #endif
 
 #ifdef HARDWARESERIAL
-    ((HardwareSerial*)this->streamPointer)->begin(this->baudrate);
+    // ReSharper disable once CppCStyleCast
+    const auto hwsPtr = ((HardwareSerial*)this->streamPointer);
+    hwsPtr->begin(this->baudrate);
+    while(!(*hwsPtr))
+    {
+        ; // Do nothing and just wait
+    }
+    return;
+
 #endif
 
 #ifdef USBAPISERIAL
-    ((Serial_*)this->streamPointer)->begin(this->baudrate);
+    // ReSharper disable once CppCStyleCast
+    const auto uasPtr = ((Serial_*)this->streamPointer);
+    uasPtr->begin(this->baudrate);
+    while(!(*uasPtr))
+    {
+        ; // Do nothing and just wait
+    }
+
 #endif
+
+
 }
 
 byte Core::readByte()

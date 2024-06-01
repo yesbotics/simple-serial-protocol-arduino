@@ -25,9 +25,11 @@ SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z')
 // SimpleSerialProtocol ssp(swSerial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
 void setup() {
+#ifndef ARDUINO_ARCH_ESP32
     // prepare LED and set it off
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LOW);
+#endif
 
     // init ssp. ssp is calling 'Serial.begin(9600)' behind the scenes
     ssp.init();
@@ -105,7 +107,10 @@ void onReceivedValues() {
 }
 
 void onError(uint8_t errorNum) {
+#ifndef ARDUINO_ARCH_ESP32
+    // set LED off
     digitalWrite(LED_BUILTIN, HIGH);
+#endif
 }
 
 

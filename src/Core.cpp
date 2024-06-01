@@ -29,6 +29,7 @@ Core::Core(
 // TODO: remove/delete stream popinter? possible?
 Core::~Core() = default;
 
+
 void Core::init()
 {
 #ifdef SOFTWARESERIAL_SUPPORTED
@@ -40,11 +41,7 @@ void Core::init()
 #endif
 
 #ifdef HARDWARESERIAL
-#ifdef ESP32
-            ((HardwareSerial*)this->streamPointer)->begin(this->baudrate, SERIAL_8N1, rxPin, txPin);
-#else
     ((HardwareSerial*)this->streamPointer)->begin(this->baudrate);
-#endif
 #endif
 
 #ifdef USBAPISERIAL

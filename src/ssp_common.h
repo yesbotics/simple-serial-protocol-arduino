@@ -4,13 +4,17 @@
 #include <Arduino.h>
 
 
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO)
+#if defined(ARDUINO_AVR_UNO) \
+    || defined(ARDUINO_AVR_NANO) \
+    || defined(ARDUINO_ARCH_ESP32)
 #define HARDWARESERIAL
 #elif defined(ARDUINO_AVR_MICRO)
 #define USBAPISERIAL
 #endif
 
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_MICRO)
+#if defined(ARDUINO_AVR_UNO) \
+    || defined(ARDUINO_AVR_NANO) \
+    || defined(ARDUINO_AVR_MICRO)
 #define SOFTWARESERIAL_SUPPORTED
 constexpr uint8_t STREAM_TYPE_SOFTWARESERIAL = 3;
 #include <SoftwareSerial.h>

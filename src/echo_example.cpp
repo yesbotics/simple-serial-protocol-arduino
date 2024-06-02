@@ -15,7 +15,7 @@ const byte COMMAND_ID_RECEIVE = 'r';
 const byte COMMAND_ID_SEND = 's';
 
 // Create instance. Pass Serial instance. Define command-id-range within Simple Serial Protocol is listening (here: a - z)
-SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z'); // ASCII: 'a' - 'z' (26 byes of RAM is reserved)
+SimpleSerialProtocol ssp(&Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z'); // ASCII: 'a' - 'z' (26 byes of RAM is reserved)
 
 // Aternatively you can create an instance of SoftwareSerial
 // https://www.arduino.cc/en/Reference/SoftwareSerial

@@ -1,6 +1,7 @@
 #ifdef MAIN
 
 
+#include <Arduino.h>
 #include <SimpleSerialProtocol.h>
 
 // declare callbacks (this is boilerplate code but needed for proper compilation of the sketch)
@@ -16,7 +17,8 @@ const byte COMMAND_ID_RECEIVE = 'r';
 const byte COMMAND_ID_SEND = 's';
 
 // Create instance. Pass Serial instance. Define command-id-range within Simple Serial Protocol is listening (here: a - z)
-SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z'); // ASCII: 'a' - 'z' (26 byes of RAM is reserved)
+SimpleSerialProtocol ssp(&Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
+// ASCII: 'a' - 'z' (26 byes of RAM is reserved)
 
 // Aternatively you can create an instance of SoftwareSerial
 // https://www.arduino.cc/en/Reference/SoftwareSerial
@@ -24,7 +26,8 @@ SimpleSerialProtocol ssp(Serial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z')
 // SoftwareSerial swSerial(2, 3); // RX, TX
 // SimpleSerialProtocol ssp(swSerial, BAUDRATE, CHARACTER_TIMEOUT, onError, 'a', 'z');
 
-void setup() {
+void setup()
+{
 #ifndef ARDUINO_ARCH_ESP32
     // prepare LED and set it off
     pinMode(LED_BUILTIN, OUTPUT);
@@ -37,18 +40,20 @@ void setup() {
     ssp.registerCommand(COMMAND_ID_RECEIVE, onReceivedValues);
 }
 
-void loop() {
+void loop()
+{
     // polling for available bytes
     ssp.loop();
 }
 
 // callbacks implementation
-void onReceivedValues() {
-
+void onReceivedValues()
+{
     //
     // Receive Data
     //
-    byte byteValue = ssp.readByte(); // Arduino's byte: https://www.arduino.cc/reference/en/language/variables/data-types/byte/
+    byte byteValue = ssp.readByte();
+    // Arduino's byte: https://www.arduino.cc/reference/en/language/variables/data-types/byte/
     bool booleanValue = ssp.readBool();
     int8_t tinySignedInt = ssp.readInt8();
     uint8_t tinyUnsignedInt = ssp.readUnsignedInt8();
@@ -106,7 +111,8 @@ void onReceivedValues() {
     ssp.writeEot(); // end command with end-of-transmission byte. important, don't forget!
 }
 
-void onError(uint8_t errorNum) {
+void onError(uint8_t errorNum)
+{
 #ifndef ARDUINO_ARCH_ESP32
     // set LED off
     digitalWrite(LED_BUILTIN, HIGH);

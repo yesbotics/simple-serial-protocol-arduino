@@ -11,6 +11,9 @@
 #elif defined(ARDUINO_AVR_MICRO)
 #define USBAPISERIAL
 #endif
+#if defined(ARDUINO_NANO_ESP32)
+#define USBCDCSERIAL
+#endif
 
 #if defined(ARDUINO_AVR_UNO) \
     || defined(ARDUINO_AVR_NANO) \

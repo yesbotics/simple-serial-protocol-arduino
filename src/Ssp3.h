@@ -265,6 +265,91 @@ public:
 
 # endif //USBAPISERIAL
 
+#ifdef USBCDCSERIAL
+
+    Ssp3(
+        USBCDC* usbapiSerialPtr,
+        const uint32_t baudrate,
+        const uint32_t waitForByteTimeout,
+        Callback* cbErrPtr = nullptr,
+        const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
+        const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+    ):
+        Ssp3{
+            false,
+            usbapiSerialPtr,
+            baudrate,
+            waitForByteTimeout,
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo,
+            cbErrPtr
+        }
+    {
+    }
+
+    Ssp3(
+        USBCDC* usbapiSerialPtr,
+        const uint32_t baudrate,
+        const uint32_t waitForByteTimeout,
+        const FunctionTypeStandaloneWithUint8Arg cbErrPtr = nullptr,
+        const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
+        const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+    ):
+        Ssp3{
+            usbapiSerialPtr,
+            baudrate,
+            waitForByteTimeout,
+            new Callback{cbErrPtr},
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo,
+        }
+    {
+    }
+
+    template <typename T>
+    Ssp3(
+        USBCDC* usbapiSerialPtr,
+        const uint32_t baudrate,
+        const uint32_t waitForByteTimeout,
+        T* instance = nullptr,
+        FunctionTypeMemberWithUint8Arg<T> cbErrPtr = nullptr,
+        const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
+        const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+    ):
+        Ssp3{
+            usbapiSerialPtr,
+            baudrate,
+            waitForByteTimeout,
+            new Callback{instance, cbErrPtr},
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo,
+        }
+    {
+    }
+
+    template <typename T>
+    Ssp3(
+        USBCDC* usbapiSerialPtr,
+        const uint32_t baudrate,
+        const uint32_t waitForByteTimeout,
+        const T* instance = nullptr,
+        const FunctionTypeConstMemberWithUint8Arg<T> cbErrPtr = nullptr,
+        const byte commandCallbackRangeFrom = COMMAND_CALLBACK_RANGE_FROM,
+        const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
+    ):
+        Ssp3{
+            usbapiSerialPtr,
+            baudrate,
+            waitForByteTimeout,
+            new Callback{instance, cbErrPtr},
+            commandCallbackRangeFrom,
+            commandCallbackRangeTo,
+        }
+    {
+    }
+
+# endif //USBCDCSERIAL
+
     virtual ~Ssp3(); // ensures proper cleanup when deleting derived objects via base class pointers.
     Ssp3(const Ssp3&) = delete; // forbid Copy-Ctor
     Ssp3& operator=(const Ssp3&) = delete; // forbid Copy-Asssignment

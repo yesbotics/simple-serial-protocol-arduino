@@ -55,14 +55,14 @@ public:
     // Constructor for non-const member function in const instance
     template <typename T>
     Callback(const T* instance, FunctionTypeMember<T> func) :
-        callback_(new MemberCallback<T>(instance, func))
+        callback_(new MemberCallback<T>(const_cast<T*>(instance), func))
     {
     }
 
     // Constructor for non-const member function with uint8_t arg in const instance
     template <typename T>
     Callback(const T* instance, FunctionTypeMemberWithUint8Arg<T> func) :
-        callback_(new MemberCallback<T>(instance, func))
+        callback_(new MemberCallback<T>(const_cast<T*>(instance), func))
     {
     }
 

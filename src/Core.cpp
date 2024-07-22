@@ -1,4 +1,5 @@
 #include <Core.h>
+#include <typeinfo>
 
 Core::Core(
     Stream& streamRef,
@@ -47,6 +48,22 @@ void Core::init_(bool waitForStream)
     }
 #endif
 
+#if defined( USBCDCSERIAL ) && defined(__GXX_RTTI)
+#if defined(__GXX_RTTI)
+    if (typeid(*this->streamPointer) == typeid(USBCDC)) {
+#endif
+        // ReSharper disable once CppCStyleCast
+        const auto ucsPtr = ((USBCDC*) this->streamPointer);
+        ucsPtr->begin(this->baudrate);
+        if (!waitForStream) return;
+        while (!(*ucsPtr)) { ; // Do nothing and just wait
+        }
+        return;
+#if defined(__GXX_RTTI)
+    }
+#endif
+#endif
+
 #ifdef HARDWARESERIAL
     // ReSharper disable once CppCStyleCast
     const auto hwsPtr = ((HardwareSerial*)this->streamPointer);
@@ -57,8 +74,8 @@ void Core::init_(bool waitForStream)
         ; // Do nothing and just wait
     }
     return;
-
 #endif
+
 
 #ifdef USBAPISERIAL
     // ReSharper disable once CppCStyleCast

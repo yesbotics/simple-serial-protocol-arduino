@@ -21,7 +21,6 @@ typedef union
 class Core
 {
 public:
-    virtual void init();
 
     // single byte value
     byte readByte();
@@ -89,6 +88,7 @@ protected:
     ~Core();
     Stream* streamPointer = nullptr;
     virtual void _onWaitForByteTimeout() = 0;
+    void init_(bool waitForStream);
 
 private:
     bool isSoftwareSerial;

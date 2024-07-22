@@ -14,9 +14,9 @@ SimpleSerialProtocol::~SimpleSerialProtocol()
 /**************************** PUBLIC FCTS *******************************/
 /************************************************************************/
 
-void SimpleSerialProtocol::init()
+void SimpleSerialProtocol::init(bool waitForSerial)
 {
-    Core::init();
+    Core::init_(waitForSerial);
     if (!this->_isCommandRangeValid())
     {
         this->_error(ERROR_COMMAND_RANGE_IS_INVALID, true);

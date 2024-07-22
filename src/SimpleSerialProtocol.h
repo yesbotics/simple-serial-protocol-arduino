@@ -354,7 +354,7 @@ public:
     SimpleSerialProtocol(const SimpleSerialProtocol&) = delete; // forbid Copy-Ctor
     SimpleSerialProtocol& operator=(const SimpleSerialProtocol&) = delete; // forbid Copy-Asssignment
 
-    void init() override;
+    void init(bool waitForSerial = false);
     bool loop();
 
     void registerCommand(byte command, Callback* cbPtr);

@@ -30,7 +30,7 @@ Core::Core(
 Core::~Core() = default;
 
 
-void Core::init()
+void Core::init_(bool waitForStream)
 {
 #ifdef SOFTWARESERIAL_SUPPORTED
     if (isSoftwareSerial)
@@ -38,6 +38,7 @@ void Core::init()
         // ReSharper disable once CppCStyleCast
         const auto ssPtr = ((SoftwareSerial*)this->streamPointer);
         ssPtr->begin(static_cast<long>(this->baudrate));
+        if(!waitForStream) return;
         while(!(*ssPtr))
         {
             ; // Do nothing and just wait
@@ -50,6 +51,7 @@ void Core::init()
     // ReSharper disable once CppCStyleCast
     const auto hwsPtr = ((HardwareSerial*)this->streamPointer);
     hwsPtr->begin(this->baudrate);
+    if(!waitForStream) return;
     while(!(*hwsPtr))
     {
         ; // Do nothing and just wait
@@ -62,6 +64,7 @@ void Core::init()
     // ReSharper disable once CppCStyleCast
     const auto uasPtr = ((Serial_*)this->streamPointer);
     uasPtr->begin(this->baudrate);
+    if(!waitForStream) return;
     while(!(*uasPtr))
     {
         ; // Do nothing and just wait

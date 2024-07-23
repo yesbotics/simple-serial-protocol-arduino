@@ -55,9 +55,11 @@ void Core::init_(bool waitForStream)
         // ReSharper disable once CppCStyleCast
         const auto ucsPtr = ((USBCDC*) this->streamPointer);
         ucsPtr->begin(this->baudrate);
-        if (!waitForStream) return;
-        while (!(*ucsPtr)) { ; // Do nothing and just wait
+        if (waitForStream){
+            while (!(*ucsPtr)) { ; // Do nothing and just wait
+            }
         }
+        delay(10);
         return;
 #if defined(__GXX_RTTI)
     }

@@ -268,7 +268,7 @@ public:
 #ifdef USBCDCSERIAL
 
     SimpleSerialProtocol(
-        USBCDC* usbapiSerialPtr,
+        USBCDC* usbcdcSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
         Callback* cbErrPtr = nullptr,
@@ -277,7 +277,7 @@ public:
     ):
         SimpleSerialProtocol{
             false,
-            usbapiSerialPtr,
+            usbcdcSerialPtr,
             baudrate,
             waitForByteTimeout,
             commandCallbackRangeFrom,
@@ -288,7 +288,7 @@ public:
     }
 
     SimpleSerialProtocol(
-        USBCDC* usbapiSerialPtr,
+        USBCDC* usbcdcSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
         const FunctionTypeStandaloneWithUint8Arg cbErrPtr = nullptr,
@@ -296,7 +296,7 @@ public:
         const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     ):
         SimpleSerialProtocol{
-            usbapiSerialPtr,
+            usbcdcSerialPtr,
             baudrate,
             waitForByteTimeout,
             new Callback{cbErrPtr},
@@ -308,7 +308,7 @@ public:
 
     template <typename T>
     SimpleSerialProtocol(
-        USBCDC* usbapiSerialPtr,
+        USBCDC* usbcdcSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
         T* instance = nullptr,
@@ -317,7 +317,7 @@ public:
         const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     ):
         SimpleSerialProtocol{
-            usbapiSerialPtr,
+            usbcdcSerialPtr,
             baudrate,
             waitForByteTimeout,
             new Callback{instance, cbErrPtr},
@@ -329,7 +329,7 @@ public:
 
     template <typename T>
     SimpleSerialProtocol(
-        USBCDC* usbapiSerialPtr,
+        USBCDC* usbcdcSerialPtr,
         const uint32_t baudrate,
         const uint32_t waitForByteTimeout,
         const T* instance = nullptr,
@@ -338,7 +338,7 @@ public:
         const byte commandCallbackRangeTo = COMMAND_CALLBACK_RANGE_TO
     ):
         SimpleSerialProtocol{
-            usbapiSerialPtr,
+            usbcdcSerialPtr,
             baudrate,
             waitForByteTimeout,
             new Callback{instance, cbErrPtr},
